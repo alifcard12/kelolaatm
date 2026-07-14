@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteAtm } from "./actions";
+import { Atm } from "@prisma/client";
 
 export default async function AtmListPage() {
   const atms = await prisma.atm.findMany({ orderBy: { createdAt: "desc" } });
@@ -31,14 +32,19 @@ export default async function AtmListPage() {
           <tbody>
             {atms.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-slate-400">
+                <td
+                  colSpan={5}
+                  className="px-4 py-6 text-center text-slate-400"
+                >
                   Belum ada data ATM.
                 </td>
               </tr>
             )}
-            {atms.map((atm) => (
+            {atms.map((atm: Atm) => (
               <tr key={atm.id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-medium text-slate-800">{atm.tid}</td>
+                <td className="px-4 py-3 font-medium text-slate-800">
+                  {atm.tid}
+                </td>
                 <td className="px-4 py-3">{atm.location}</td>
                 <td className="px-4 py-3">{atm.branch}</td>
                 <td className="px-4 py-3">{atm.ssb}</td>
@@ -49,7 +55,9 @@ export default async function AtmListPage() {
                       await deleteAtm(atm.id);
                     }}
                   >
-                    <button className="text-red-500 hover:underline text-xs">Hapus</button>
+                    <button className="text-red-500 hover:underline text-xs">
+                      Hapus
+                    </button>
                   </form>
                 </td>
               </tr>
