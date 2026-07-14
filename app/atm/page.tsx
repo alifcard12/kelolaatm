@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteAtm } from "./actions";
-import { Atm } from "@prisma/client";
 
 export default async function AtmListPage() {
   const atms = await prisma.atm.findMany({ orderBy: { createdAt: "desc" } });
@@ -40,7 +39,7 @@ export default async function AtmListPage() {
                 </td>
               </tr>
             )}
-            {atms.map((atm: Atm) => (
+            {atms.map((atm) => (
               <tr key={atm.id} className="border-t border-slate-100">
                 <td className="px-4 py-3 font-medium text-slate-800">
                   {atm.tid}
