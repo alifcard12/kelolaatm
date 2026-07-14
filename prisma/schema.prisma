@@ -1,0 +1,20 @@
+datasource db {
+  provider = "postgresql"
+  // Connection URL moved to prisma.config.ts for Prisma 7
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Atm {
+  id        String   @id @default(cuid())
+  tid       Int      @unique
+  location  String
+  branch    String
+  ssb       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("atms")
+}
