@@ -1,10 +1,9 @@
-datasource db {
-  provider = "postgresql"
-  // Connection URL moved to prisma.config.ts for Prisma 7
-}
-
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
 }
 
 model Atm {
@@ -16,5 +15,36 @@ model Atm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  devices Device[]
+
   @@map("atms")
+}
+
+enum DeviceType {
+  NVR
+  MONITOR
+  CCTV
+  UPS
+}
+
+enum DeviceCondition {
+  GOOD
+  DAMAGED
+  NEEDS_REPLACEMENT
+}
+
+model Device {
+  id           String          @id @default(cuid())
+  type         DeviceType
+  serialNumber String          @unique
+  condition    DeviceCondition @default(GOOD)
+  note         String? // catatan kondisi/problem
+  photoUrl     String? // url dari Cloudinary
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt // ini yang jadi "Last Update"
+
+  atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
+  atmId String
+
+  @@map("devices")
 }

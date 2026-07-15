@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteAtm } from "./actions";
+import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
 
 export default async function AtmListPage() {
   const atms = await prisma.atm.findMany({ orderBy: { createdAt: "desc" } });
@@ -25,28 +26,29 @@ export default async function AtmListPage() {
               <th className="px-4 py-3">Lokasi</th>
               <th className="px-4 py-3">Branch</th>
               <th className="px-4 py-3">SSB</th>
+              <th className="px-4 py-3">Last Update</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {atms.length === 0 && (
               <tr>
-                <td
-                  colSpan={5}
-                  className="px-4 py-6 text-center text-slate-400"
-                >
+                <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
                   Belum ada data ATM.
                 </td>
               </tr>
             )}
             {atms.map((atm) => (
               <tr key={atm.id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-medium text-slate-800">
-                  {atm.tid}
-                </td>
+                <td className="px-4 py-3 font-medium text-slate-800">{atm.tid}</td>
                 <td className="px-4 py-3">{atm.location}</td>
                 <td className="px-4 py-3">{atm.branch}</td>
                 <td className="px-4 py-3">{atm.ssb}</td>
+                <td className="px-4 py-3 text-slate-500">
+                  <span title={formatJakartaDateTime(atm.updatedAt)}>
+                    {formatRelativeTime(atm.updatedAt)}
+                  </span>
+                </td>
                 <td className="px-4 py-3 text-right">
                   <form
                     action={async () => {
@@ -54,9 +56,7 @@ export default async function AtmListPage() {
                       await deleteAtm(atm.id);
                     }}
                   >
-                    <button className="text-red-500 hover:underline text-xs">
-                      Hapus
-                    </button>
+                    <button className="text-red-500 hover:underline text-xs">Hapus</button>
                   </form>
                 </td>
               </tr>
