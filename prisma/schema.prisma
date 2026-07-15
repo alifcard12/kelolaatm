@@ -6,6 +6,11 @@ datasource db {
   provider  = "postgresql"
 }
 
+// ==============================
+// TAHAP 2: tambah model Device
+// Model lain (Kaset, Ticket, FinanceEntry, Visit) menyusul.
+// ==============================
+
 model Atm {
   id        String   @id @default(cuid())
   tid       Int      @unique
@@ -16,6 +21,7 @@ model Atm {
   updatedAt DateTime @updatedAt
 
   devices Device[]
+  tickets Ticket[]
 
   @@map("atms")
 }
@@ -36,6 +42,7 @@ enum DeviceCondition {
 model Device {
   id           String          @id @default(cuid())
   type         DeviceType
+  brand        String
   serialNumber String          @unique
   condition    DeviceCondition @default(GOOD)
   note         String? // catatan kondisi/problem
@@ -47,4 +54,65 @@ model Device {
   atmId String
 
   @@map("devices")
+}
+
+// ==============================
+// TAHAP 3: Kaset (inventory terpisah, tidak terikat ATM)
+// Riwayat kondisi/problem dicatat sebagai log terpisah (KasetLog),
+// supaya histori tiap kaset tetap tersimpan, bukan ditimpa.
+// ==============================
+
+enum KasetType {
+  ALL_IN
+  CURRENCY
+}
+
+model Kaset {
+  id           String    @id @default(cuid())
+  serialNumber String    @unique
+  type         KasetType @default(ALL_IN)
+  createdAt    DateTime  @default(now())
+
+  logs KasetLog[]
+
+  @@map("kaset")
+}
+
+model KasetLog {
+  id        String          @id @default(cuid())
+  condition DeviceCondition // reuse enum yang sama: GOOD / DAMAGED / NEEDS_REPLACEMENT
+  problem   String? // kosong kalau kondisi baik / tidak ada masalah
+  photoUrl  String? // url dari Cloudinary
+  createdAt DateTime        @default(now()) // ini "waktu dicatat" sekaligus "last update" kaset
+
+  kaset   Kaset  @relation(fields: [kasetId], references: [id], onDelete: Cascade)
+  kasetId String
+
+  @@map("kaset_logs")
+}
+
+// ==============================
+// TAHAP 4: Ticket (CM open/close), datanya narik dari ATM terkait
+// (lokasi, kanca, tid, ssb), problem diisi manual saat open,
+// nomor tiket + action diisi manual saat close.
+// ==============================
+
+enum TicketStatus {
+  OPEN
+  CLOSED
+}
+
+model Ticket {
+  id           String       @id @default(cuid())
+  problem      String
+  ticketNumber String? // diisi manual saat close, kosong selama OPEN
+  action       String? // diisi manual saat close
+  status       TicketStatus @default(OPEN)
+  openedAt     DateTime     @default(now())
+  closedAt     DateTime?
+
+  atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
+  atmId String
+
+  @@map("tickets")
 }

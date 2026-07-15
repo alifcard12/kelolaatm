@@ -24,6 +24,22 @@ export function formatJakartaDate(date: Date): string {
   }).format(date);
 }
 
+// Format "15-07-2026" — dipakai di teks tiket OPEN/CLOSE yang di-copy
+export function formatJakartaDateDMY(date: Date): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: JAKARTA_TZ,
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).formatToParts(date);
+
+  const day = parts.find((p) => p.type === "day")?.value ?? "";
+  const month = parts.find((p) => p.type === "month")?.value ?? "";
+  const year = parts.find((p) => p.type === "year")?.value ?? "";
+
+  return `${day}-${month}-${year}`;
+}
+
 // Untuk "waktu relatif" seperti "3 jam lalu", "kemarin" di kolom Last Update
 export function formatRelativeTime(date: Date): string {
   const now = new Date();

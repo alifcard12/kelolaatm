@@ -38,6 +38,7 @@ export default async function DevicesPage() {
           <thead className="bg-slate-100 text-slate-600 text-left">
             <tr>
               <th className="px-4 py-3">Tipe</th>
+              <th className="px-4 py-3">Brand</th>
               <th className="px-4 py-3">SN</th>
               <th className="px-4 py-3">ATM (TID)</th>
               <th className="px-4 py-3">Kondisi</th>
@@ -48,7 +49,7 @@ export default async function DevicesPage() {
           <tbody>
             {devices.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-slate-400">
+                <td colSpan={7} className="px-4 py-6 text-center text-slate-400">
                   Belum ada data perangkat.
                 </td>
               </tr>
@@ -56,6 +57,7 @@ export default async function DevicesPage() {
             {devices.map((d) => (
               <tr key={d.id} className="border-t border-slate-100">
                 <td className="px-4 py-3 font-medium text-slate-800">{d.type}</td>
+                <td className="px-4 py-3">{d.brand}</td>
                 <td className="px-4 py-3">{d.serialNumber}</td>
                 <td className="px-4 py-3">
                   {d.atm.tid} — {d.atm.location}

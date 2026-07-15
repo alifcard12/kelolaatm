@@ -8,7 +8,7 @@ export async function createAtm(formData: FormData) {
   const tid = Number(formData.get("tid"));
   const location = String(formData.get("location") ?? "").trim();
   const branch = String(formData.get("branch") ?? "").trim();
-  const ssb = String(formData.get("ssb"));
+  const ssb = String(formData.get("ssb") ?? "").trim();
 
   if (!tid || !location || !branch || !ssb) {
     throw new Error("Semua field wajib diisi.");

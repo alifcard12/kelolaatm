@@ -47,6 +47,17 @@ export default async function NewDevicePage() {
           </div>
 
           <div>
+            <label className="block text-sm text-slate-600 mb-1">Brand</label>
+            <input
+              name="brand"
+              type="text"
+              required
+              placeholder="mis. Hikvision, APC, Samsung"
+              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm text-slate-600 mb-1">Serial Number</label>
             <input
               name="serialNumber"

@@ -40,7 +40,7 @@ export default function NewAtmPage() {
           <label className="block text-sm text-slate-600 mb-1">SSB</label>
           <input
             name="ssb"
-            type="number"
+            type="text"
             required
             className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
           />
