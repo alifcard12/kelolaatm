@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatJakartaDateTime } from "@/lib/date";
-import { addKasetLog, deleteKaset, updateKasetType } from "../actions";
+import { addKasetLog, deleteKaset, deleteKasetLog, deleteKasetLogPhoto, updateKasetType } from "../actions";
+import { PhotoUploader } from "@/components/PhotoUploader";
+import { PhotoLightbox } from "@/components/PhotoLightbox";
 
 const conditionLabel: Record<string, string> = {
   GOOD: "Baik",
@@ -25,7 +27,7 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
 
   const kaset = await prisma.kaset.findUnique({
     where: { id },
-    include: { logs: { orderBy: { createdAt: "desc" } } },
+    include: { logs: { orderBy: { createdAt: "desc" }, include: { photos: true } } },
   });
 
   if (!kaset) notFound();
@@ -98,6 +100,10 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
             className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
           />
         </div>
+        <div>
+          <label className="block text-sm text-slate-600 mb-1">Foto (opsional, bisa lebih dari 1)</label>
+          <PhotoUploader />
+        </div>
         <button
           type="submit"
           className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
@@ -115,9 +121,22 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
               <span className={`px-2 py-1 rounded-full text-xs ${conditionColor[log.condition]}`}>
                 {conditionLabel[log.condition]}
               </span>
-              <span className="text-xs text-slate-400">{formatJakartaDateTime(log.createdAt)}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">{formatJakartaDateTime(log.createdAt)}</span>
+                <form
+                  action={async () => {
+                    "use server";
+                    await deleteKasetLog(kaset.id, log.id);
+                  }}
+                >
+                  <button type="submit" className="text-red-500 hover:underline text-xs">
+                    Hapus Riwayat
+                  </button>
+                </form>
+              </div>
             </div>
             {log.problem && <p className="text-sm text-slate-600 mt-2">{log.problem}</p>}
+            <PhotoLightbox photos={log.photos} onDeletePhoto={deleteKasetLogPhoto.bind(null, kaset.id)} />
           </div>
         ))}
       </div>

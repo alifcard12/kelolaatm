@@ -72,13 +72,26 @@ model KasetLog {
   id        String          @id @default(cuid())
   condition DeviceCondition 
   problem   String? 
-  photoUrl  String? // url dari Cloudinary
   createdAt DateTime        @default(now()) // ini "waktu dicatat" sekaligus "last update" kaset
 
   kaset   Kaset  @relation(fields: [kasetId], references: [id], onDelete: Cascade)
   kasetId String
 
+  photos KasetLogPhoto[]
+
   @@map("kaset_logs")
+}
+
+model KasetLogPhoto {
+  id        String   @id @default(cuid())
+  url       String // secure_url dari Cloudinary
+  publicId  String // public_id Cloudinary, dipakai kalau nanti mau hapus foto
+  createdAt DateTime @default(now())
+
+  log   KasetLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId String
+
+  @@map("kaset_log_photos")
 }
 
 
