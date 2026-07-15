@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { closeTicket, deleteTicket, reopenTicket } from "./actions";
+import { deleteTicket } from "./actions";
 import { formatJakartaDateTime } from "@/lib/date";
 import { buildOpenTicketText, buildCloseTicketText } from "@/lib/ticketText";
 import CopyTextButton from "@/components/CopyTextButton";
 
 export default async function TicketsPage() {
   const tickets = await prisma.ticket.findMany({
-    include: { atm: true },
+    include: { atm: true, device: true, attachments: true },
     orderBy: [{ status: "asc" }, { openedAt: "desc" }],
     // status "asc" -> CLOSED < OPEN secara alfabet, jadi kita balik urutannya di bawah
   });
@@ -61,8 +61,6 @@ export default async function TicketsPage() {
                 })
               : "";
 
-          const closeTicketWithId = closeTicket.bind(null, t.id);
-
           return (
             <div key={t.id} className="bg-white border border-slate-200 rounded-lg p-5">
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -80,6 +78,11 @@ export default async function TicketsPage() {
                     {t.atm.tid} — {t.atm.location} ({t.atm.branch})
                   </div>
                   <div className="text-xs text-slate-400">SSB: {t.atm.ssb}</div>
+                  {t.device && (
+                    <div className="text-xs text-slate-400">
+                      Device: {t.device.type} — {t.device.brand} — SN {t.device.serialNumber}
+                    </div>
+                  )}
                 </div>
 
                 <form
@@ -104,6 +107,7 @@ export default async function TicketsPage() {
                 {t.status === "CLOSED" && t.ticketNumber && (
                   <> · No. Tiket: {t.ticketNumber}</>
                 )}
+                {t.attachments.length > 0 && <> · Lampiran: {t.attachments.length}</>}
               </div>
 
               {t.status === "CLOSED" && t.action && (
@@ -124,60 +128,13 @@ export default async function TicketsPage() {
                   />
                 )}
 
-                {t.status === "CLOSED" && (
-                  <form
-                    action={async () => {
-                      "use server";
-                      await reopenTicket(t.id);
-                    }}
-                  >
-                    <button className="text-slate-500 hover:underline text-xs px-2">
-                      Buka Kembali
-                    </button>
-                  </form>
-                )}
-              </div>
-
-              {t.status === "OPEN" && (
-                <form
-                  action={closeTicketWithId}
-                  className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-3"
+                <Link
+                  href={`/tickets/${t.id}`}
+                  className="text-slate-500 hover:underline text-xs px-2"
                 >
-                  <h4 className="text-xs font-semibold text-slate-500 uppercase">
-                    Tutup Tiket
-                  </h4>
-                  <div className="flex gap-3">
-                    <div className="flex-1">
-                      <label className="block text-xs text-slate-500 mb-1">
-                        Nomor Tiket (CM)
-                      </label>
-                      <input
-                        name="ticketNumber"
-                        type="text"
-                        required
-                        placeholder="mis. 54564554"
-                        className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs text-slate-500 mb-1">Action</label>
-                    <textarea
-                      name="action"
-                      rows={2}
-                      required
-                      placeholder="mis. REPLACE PSU, TES FUNGSI OK"
-                      className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
-                  >
-                    Tutup Tiket
-                  </button>
-                </form>
-              )}
+                  {t.status === "OPEN" ? "Detail / Tutup Tiket" : "Detail / Edit Tiket"}
+                </Link>
+              </div>
             </div>
           );
         })}

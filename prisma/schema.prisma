@@ -49,6 +49,8 @@ model Device {
   atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
   atmId String
 
+  tickets Ticket[]
+
   @@map("devices")
 }
 
@@ -112,9 +114,29 @@ model Ticket {
   atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
   atmId String
 
-  visits Visit[]
+  // device (NVR/Monitor/CCTV/UPS) yang jadi rujukan/diperbaiki di tiket ini,
+  // dipilih dari device-device milik ATM yang sama
+  device   Device? @relation(fields: [deviceId], references: [id], onDelete: SetNull)
+  deviceId String?
+
+  attachments TicketAttachment[]
+  visits      Visit[]
 
   @@map("tickets")
+}
+
+model TicketAttachment {
+  id           String   @id @default(cuid())
+  url          String // secure_url dari Cloudinary
+  publicId     String // public_id Cloudinary, dipakai kalau nanti mau hapus foto
+  resourceType String // "image" atau "raw" (pdf)
+  filename     String? // nama file asli, dipakai buat lampiran PDF
+  createdAt    DateTime @default(now())
+
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId String
+
+  @@map("ticket_attachments")
 }
 
 enum VisitType {
