@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { logout } from "@/app/login/actions";
 
 const navItems = [
   { href: "/atm", label: "ATM" },
@@ -24,6 +25,15 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+
+      <form action={logout} className="mt-6 px-2">
+        <button
+          type="submit"
+          className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-500 hover:bg-slate-100 hover:text-red-600 transition-colors"
+        >
+          Keluar
+        </button>
+      </form>
     </aside>
   );
 }

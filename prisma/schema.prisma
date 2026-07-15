@@ -6,11 +6,6 @@ datasource db {
   provider  = "postgresql"
 }
 
-// ==============================
-// TAHAP 2: tambah model Device
-// Model lain (Kaset, Ticket, FinanceEntry, Visit) menyusul.
-// ==============================
-
 model Atm {
   id        String   @id @default(cuid())
   tid       Int      @unique
@@ -22,6 +17,7 @@ model Atm {
 
   devices Device[]
   tickets Ticket[]
+  visits  Visit[]
 
   @@map("atms")
 }
@@ -56,12 +52,6 @@ model Device {
   @@map("devices")
 }
 
-// ==============================
-// TAHAP 3: Kaset (inventory terpisah, tidak terikat ATM)
-// Riwayat kondisi/problem dicatat sebagai log terpisah (KasetLog),
-// supaya histori tiap kaset tetap tersimpan, bukan ditimpa.
-// ==============================
-
 enum KasetType {
   ALL_IN
   CURRENCY
@@ -80,8 +70,8 @@ model Kaset {
 
 model KasetLog {
   id        String          @id @default(cuid())
-  condition DeviceCondition // reuse enum yang sama: GOOD / DAMAGED / NEEDS_REPLACEMENT
-  problem   String? // kosong kalau kondisi baik / tidak ada masalah
+  condition DeviceCondition 
+  problem   String? 
   photoUrl  String? // url dari Cloudinary
   createdAt DateTime        @default(now()) // ini "waktu dicatat" sekaligus "last update" kaset
 
@@ -91,11 +81,6 @@ model KasetLog {
   @@map("kaset_logs")
 }
 
-// ==============================
-// TAHAP 4: Ticket (CM open/close), datanya narik dari ATM terkait
-// (lokasi, kanca, tid, ssb), problem diisi manual saat open,
-// nomor tiket + action diisi manual saat close.
-// ==============================
 
 enum TicketStatus {
   OPEN
@@ -114,5 +99,32 @@ model Ticket {
   atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
   atmId String
 
+  visits Visit[]
+
   @@map("tickets")
+}
+
+enum VisitType {
+  PM
+  CM
+}
+
+model Visit {
+  id           String    @id @default(cuid())
+  visitType    VisitType
+  visitDate    DateTime  @default(now())
+  ticketNumber String? // diisi manual, khusus untuk visit tipe PM
+  keterangan   String? // catatan hasil kunjungan
+  photoUrl     String? // url foto dokumentasi kunjungan (Cloudinary/host lain)
+  createdAt    DateTime  @default(now())
+
+  atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
+  atmId String
+
+  // khusus visit tipe CM: relasi ke tiket yang statusnya sudah CLOSED,
+  // nomor tiketnya diambil dari Ticket.ticketNumber (bukan dari field di atas)
+  ticket   Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  ticketId String?
+
+  @@map("visits")
 }

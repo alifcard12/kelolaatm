@@ -1,18 +1,16 @@
-// Semua timestamp disimpan di database sebagai UTC (standar Prisma/Postgres).
-// Fungsi ini yang bertanggung jawab menampilkannya secara konsisten sebagai
-// waktu Jakarta (GMT+7), terlepas dari timezone server (Vercel default = UTC).
-
 const JAKARTA_TZ = "Asia/Jakarta";
 
 export function formatJakartaDateTime(date: Date): string {
-  return new Intl.DateTimeFormat("id-ID", {
-    timeZone: JAKARTA_TZ,
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date) + " WIB";
+  return (
+    new Intl.DateTimeFormat("id-ID", {
+      timeZone: JAKARTA_TZ,
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date) + " WIB"
+  );
 }
 
 export function formatJakartaDate(date: Date): string {
