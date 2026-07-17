@@ -15,11 +15,38 @@ model Atm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  devices Device[]
-  tickets Ticket[]
-  visits  Visit[]
+  devices       Device[]
+  tickets       Ticket[]
+  visits        Visit[]
+  logs          AtmLog[]
+  deviceHistory DeviceHistory[]
 
   @@map("atms")
+}
+
+model AtmLog {
+  id        String   @id @default(cuid())
+  note      String? // catatan riwayat (mis. kunjungan, temuan, perbaikan umum)
+  createdAt DateTime @default(now())
+
+  atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
+  atmId String
+
+  photos AtmLogPhoto[]
+
+  @@map("atm_logs")
+}
+
+model AtmLogPhoto {
+  id        String   @id @default(cuid())
+  url       String // secure_url dari Cloudinary
+  publicId  String // public_id Cloudinary, dipakai kalau nanti mau hapus foto
+  createdAt DateTime @default(now())
+
+  log   AtmLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId String
+
+  @@map("atm_log_photos")
 }
 
 enum DeviceType {
@@ -52,6 +79,30 @@ model Device {
   tickets Ticket[]
 
   @@map("devices")
+}
+
+enum DeviceHistoryAction {
+  ADDED
+  REPLACED
+  REMOVED
+}
+
+// Riwayat pasang/ganti/lepas perangkat di sebuah ATM. Baris ini tetap disimpan
+// walau Device aslinya sudah dihapus/diganti, jadi datanya "flat" (bukan relasi
+// ke Device) supaya riwayat tidak ikut hilang.
+model DeviceHistory {
+  id           String              @id @default(cuid())
+  action       DeviceHistoryAction
+  deviceType   DeviceType
+  brand        String
+  serialNumber String
+  note         String?
+  createdAt    DateTime            @default(now())
+
+  atm   Atm    @relation(fields: [atmId], references: [id], onDelete: Cascade)
+  atmId String
+
+  @@map("device_history")
 }
 
 enum KasetType {

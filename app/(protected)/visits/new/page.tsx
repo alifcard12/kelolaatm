@@ -9,18 +9,11 @@ function defaultDatetimeLocalValue(date: Date): string {
 }
 
 export default async function NewVisitPage() {
-  const [atms, closedTickets] = await Promise.all([
-    prisma.atm.findMany({ orderBy: { tid: "asc" } }),
-    prisma.ticket.findMany({
-      where: { status: "CLOSED" },
-      include: { atm: true },
-      orderBy: { closedAt: "desc" },
-    }),
-  ]);
+  const atms = await prisma.atm.findMany({ orderBy: { tid: "asc" } });
 
   return (
     <div className="max-w-md">
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Tambah Jadwal Kunjungan</h2>
+      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Tambah Jadwal Kunjungan (PM)</h2>
 
       {atms.length === 0 ? (
         <p className="text-slate-500 text-sm">
@@ -49,7 +42,7 @@ export default async function NewVisitPage() {
             </p>
           </div>
 
-          <VisitTypeFields closedTickets={closedTickets} />
+          <VisitTypeFields />
 
           <div>
             <label className="block text-sm text-slate-600 mb-1">Tanggal &amp; Waktu Kunjungan</label>

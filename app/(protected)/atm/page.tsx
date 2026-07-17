@@ -39,8 +39,12 @@ export default async function AtmListPage() {
               </tr>
             )}
             {atms.map((atm) => (
-              <tr key={atm.id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-medium text-slate-800">{atm.tid}</td>
+              <tr key={atm.id} className="border-t border-slate-100 hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium text-slate-800">
+                  <Link href={`/atm/${atm.id}`} className="hover:underline">
+                    {atm.tid}
+                  </Link>
+                </td>
                 <td className="px-4 py-3">{atm.location}</td>
                 <td className="px-4 py-3">{atm.branch}</td>
                 <td className="px-4 py-3">{atm.ssb}</td>
@@ -50,11 +54,15 @@ export default async function AtmListPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
+                  <Link href={`/atm/${atm.id}`} className="text-slate-500 hover:underline text-xs mr-3">
+                    Detail
+                  </Link>
                   <form
                     action={async () => {
                       "use server";
                       await deleteAtm(atm.id);
                     }}
+                    className="inline"
                   >
                     <button className="text-red-500 hover:underline text-xs">Hapus</button>
                   </form>

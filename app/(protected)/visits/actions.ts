@@ -16,28 +16,20 @@ export async function createVisit(formData: FormData) {
     throw new Error("ATM dan tipe kunjungan wajib diisi.");
   }
 
+  // Pencatatan manual di halaman ini hanya untuk kunjungan PM. Kunjungan CM
+  // otomatis dibuat sistem saat tiket ditutup di halaman Tiket.
+  if (visitType !== "PM") {
+    throw new Error(
+      "Kunjungan tipe CM otomatis tercatat saat tiket ditutup dan tidak bisa diinput manual di sini."
+    );
+  }
+
   const visitDate = visitDateRaw ? new Date(visitDateRaw) : new Date();
 
-  let ticketId: string | null = null;
-  let ticketNumber: string | null = null;
-
-  if (visitType === "PM") {
-    // PM: nomor tiket diisi manual, tidak terkait tabel Ticket
-    ticketNumber = String(formData.get("ticketNumber") ?? "").trim() || null;
-    if (!ticketNumber) {
-      throw new Error("Nomor tiket wajib diisi untuk kunjungan PM.");
-    }
-  } else {
-    // CM: wajib pilih tiket yang statusnya CLOSED, nomor tiket ikut dari tiket tsb
-    ticketId = String(formData.get("ticketId") ?? "").trim() || null;
-    if (!ticketId) {
-      throw new Error("Tiket wajib dipilih untuk kunjungan CM.");
-    }
-
-    const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
-    if (!ticket || ticket.status !== "CLOSED") {
-      throw new Error("Tiket yang dipilih tidak valid atau belum CLOSED.");
-    }
+  // PM: nomor tiket diisi manual, tidak terkait tabel Ticket
+  const ticketNumber = String(formData.get("ticketNumber") ?? "").trim() || null;
+  if (!ticketNumber) {
+    throw new Error("Nomor tiket wajib diisi untuk kunjungan PM.");
   }
 
   await prisma.visit.create({
@@ -45,7 +37,7 @@ export async function createVisit(formData: FormData) {
       atmId,
       visitType,
       visitDate,
-      ticketId,
+      ticketId: null,
       ticketNumber,
       keterangan,
       photoUrl,

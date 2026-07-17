@@ -60,7 +60,9 @@ export default async function DevicesPage() {
                 <td className="px-4 py-3">{d.brand}</td>
                 <td className="px-4 py-3">{d.serialNumber}</td>
                 <td className="px-4 py-3">
-                  {d.atm.tid} — {d.atm.location}
+                  <Link href={`/atm/${d.atm.id}`} className="hover:underline">
+                    {d.atm.tid} — {d.atm.location}
+                  </Link>
                 </td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded-full text-xs ${conditionColor[d.condition]}`}>

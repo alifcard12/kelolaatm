@@ -14,7 +14,13 @@ const MAX_PHOTO_SIZE = 5 * 1024 * 1024; // 5MB
  *
  * Alur: HP -> Cloudinary (langsung) -> Server Action cuma terima teks URL.
  */
-export function PhotoUploader({ name = "photosJson" }: { name?: string }) {
+export function PhotoUploader({
+  name = "photosJson",
+  folder = "kaset-logs",
+}: {
+  name?: string;
+  folder?: string;
+}) {
   const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +61,7 @@ export function PhotoUploader({ name = "photosJson" }: { name?: string }) {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("upload_preset", uploadPreset);
-        formData.append("folder", "kaset-logs");
+        formData.append("folder", folder);
 
         const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
           method: "POST",

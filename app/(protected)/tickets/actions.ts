@@ -107,6 +107,11 @@ export async function closeTicket(ticketId: string, formData: FormData) {
 
   const uploaded = getUploadedFiles(formData);
 
+  const wasClosedBefore = await prisma.ticket.findUnique({
+    where: { id: ticketId },
+    select: { status: true, atmId: true },
+  });
+
   await prisma.ticket.update({
     where: { id: ticketId },
     data: {
@@ -126,8 +131,36 @@ export async function closeTicket(ticketId: string, formData: FormData) {
     },
   });
 
+  // Setiap kali tiket ditutup (baik pertama kali maupun ditutup ulang setelah
+  // sempat dibuka lagi), otomatis catat sebagai jadwal kunjungan tipe CM.
+  // Kalau sudah pernah ada visit CM untuk tiket ini, cukup update tanggalnya
+  // supaya tidak dobel.
+  if (wasClosedBefore) {
+    const existingVisit = await prisma.visit.findFirst({
+      where: { ticketId, visitType: "CM" },
+    });
+
+    if (existingVisit) {
+      await prisma.visit.update({
+        where: { id: existingVisit.id },
+        data: { visitDate: new Date() },
+      });
+    } else {
+      await prisma.visit.create({
+        data: {
+          atmId: wasClosedBefore.atmId,
+          visitType: "CM",
+          visitDate: new Date(),
+          ticketId,
+        },
+      });
+    }
+  }
+
   revalidatePath(`/tickets/${ticketId}`);
   revalidatePath("/tickets");
+  revalidatePath("/visits");
+  revalidatePath(`/atm/${wasClosedBefore?.atmId ?? ""}`);
 }
 
 export async function reopenTicket(ticketId: string) {
@@ -141,8 +174,14 @@ export async function reopenTicket(ticketId: string) {
     },
   });
 
+  // Tiket dibuka lagi -> hapus jadwal kunjungan CM otomatis yang sempat
+  // dibuat saat tiket ini ditutup, supaya tidak nyangkut data kunjungan
+  // untuk tiket yang belum benar-benar selesai.
+  await prisma.visit.deleteMany({ where: { ticketId, visitType: "CM" } });
+
   revalidatePath(`/tickets/${ticketId}`);
   revalidatePath("/tickets");
+  revalidatePath("/visits");
 }
 
 /** Hapus satu lampiran tiket (dari Cloudinary sekaligus dari DB). */
