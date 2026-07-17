@@ -56,7 +56,11 @@ export default async function DevicesPage() {
             )}
             {devices.map((d) => (
               <tr key={d.id} className="border-t border-slate-100">
-                <td className="px-4 py-3 font-medium text-slate-800">{d.type}</td>
+                <td className="px-4 py-3 font-medium text-slate-800">
+                  <Link href={`/devices/${d.id}`} className="hover:underline">
+                    {d.type}
+                  </Link>
+                </td>
                 <td className="px-4 py-3">{d.brand}</td>
                 <td className="px-4 py-3">{d.serialNumber}</td>
                 <td className="px-4 py-3">

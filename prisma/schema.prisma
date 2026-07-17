@@ -77,8 +77,34 @@ model Device {
   atmId String
 
   tickets Ticket[]
+  logs    DeviceLog[]
 
   @@map("devices")
+}
+
+model DeviceLog {
+  id        String   @id @default(cuid())
+  note      String? // catatan riwayat perangkat (mis. pengecekan, perbaikan, kondisi terbaru)
+  createdAt DateTime @default(now())
+
+  device   Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  deviceId String
+
+  photos DeviceLogPhoto[]
+
+  @@map("device_logs")
+}
+
+model DeviceLogPhoto {
+  id        String   @id @default(cuid())
+  url       String // secure_url dari Cloudinary
+  publicId  String // public_id Cloudinary, dipakai kalau nanti mau hapus foto
+  createdAt DateTime @default(now())
+
+  log   DeviceLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  logId String
+
+  @@map("device_log_photos")
 }
 
 enum DeviceHistoryAction {
