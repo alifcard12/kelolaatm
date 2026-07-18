@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { updateAtm, addAtmLog, deleteAtmLog, deleteAtmLogPhoto, deleteAtm } from "../actions";
+import {
+  updateAtm,
+  addAtmLog,
+  deleteAtmLog,
+  deleteAtmLogPhoto,
+  deleteAtm,
+} from "../actions";
 import { deleteDevice, replaceDevice } from "../../devices/actions";
 import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
 import { PhotoUploader } from "@/components/PhotoUploader";
@@ -25,7 +31,11 @@ import {
   VISIT_TYPE_TONE,
 } from "@/lib/labels";
 
-export default async function AtmDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AtmDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const atm = await prisma.atm.findUnique({
@@ -46,13 +56,16 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
 
   async function deleteAndRedirect() {
     "use server";
-    await deleteAtm(atm.id);
+    await deleteAtm(atm!.id);
     redirect("/atm");
   }
 
   return (
     <div className="max-w-2xl">
-      <Link href="/atm" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
+      <Link
+        href="/atm"
+        className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
+      >
         <FiChevronLeft /> Kembali ke Data ATM
       </Link>
 
@@ -64,15 +77,37 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
       {/* Edit info ATM */}
       <Card className="flex flex-col gap-4 mb-8">
         <CardTitle>Info ATM</CardTitle>
-        <ActionForm action={updateAtmWithId} successMessage="Info ATM berhasil disimpan" className="flex flex-col gap-4">
+        <ActionForm
+          action={updateAtmWithId}
+          successMessage="Info ATM berhasil disimpan"
+          className="flex flex-col gap-4"
+        >
           <Field label="Location" htmlFor="location">
-            <Input id="location" name="location" type="text" required defaultValue={atm.location} />
+            <Input
+              id="location"
+              name="location"
+              type="text"
+              required
+              defaultValue={atm.location}
+            />
           </Field>
           <Field label="Branch" htmlFor="branch">
-            <Input id="branch" name="branch" type="text" required defaultValue={atm.branch} />
+            <Input
+              id="branch"
+              name="branch"
+              type="text"
+              required
+              defaultValue={atm.branch}
+            />
           </Field>
           <Field label="SSB" htmlFor="ssb">
-            <Input id="ssb" name="ssb" type="text" required defaultValue={atm.ssb} />
+            <Input
+              id="ssb"
+              name="ssb"
+              type="text"
+              required
+              defaultValue={atm.ssb}
+            />
           </Field>
           <Button type="submit" className="self-start">
             Simpan Perubahan
@@ -82,14 +117,22 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
 
       {/* Devices terkait */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-sm font-semibold text-espresso">Perangkat Terpasang</h3>
-        <Link href="/devices/new" className="inline-flex items-center gap-1 text-xs text-rose hover:underline">
+        <h3 className="font-display text-sm font-semibold text-espresso">
+          Perangkat Terpasang
+        </h3>
+        <Link
+          href="/devices/new"
+          className="inline-flex items-center gap-1 text-xs text-rose hover:underline"
+        >
           <FiPlus className="h-3.5 w-3.5" /> Tambah Perangkat
         </Link>
       </div>
       <div className="flex flex-col gap-3 mb-8">
         {atm.devices.length === 0 && (
-          <EmptyState title="Belum ada perangkat" description="Belum ada perangkat terpasang di ATM ini." />
+          <EmptyState
+            title="Belum ada perangkat"
+            description="Belum ada perangkat terpasang di ATM ini."
+          />
         )}
         {atm.devices.map((d) => {
           const replaceDeviceWithId = replaceDevice.bind(null, d.id);
@@ -100,11 +143,17 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
                   <span className="text-sm font-medium text-espresso">
                     {d.type} — {d.brand}
                   </span>
-                  <span className="text-xs text-espresso-soft/70 ml-2">SN {d.serialNumber}</span>
+                  <span className="text-xs text-espresso-soft/70 ml-2">
+                    SN {d.serialNumber}
+                  </span>
                 </div>
-                <Badge tone={CONDITION_TONE[d.condition]}>{CONDITION_LABEL[d.condition]}</Badge>
+                <Badge tone={CONDITION_TONE[d.condition]}>
+                  {CONDITION_LABEL[d.condition]}
+                </Badge>
               </div>
-              {d.note && <p className="text-sm text-espresso-soft mt-2">{d.note}</p>}
+              {d.note && (
+                <p className="text-sm text-espresso-soft mt-2">{d.note}</p>
+              )}
               <div className="text-xs text-espresso-soft/70 mt-2">
                 Last Update: {formatRelativeTime(d.updatedAt)}
               </div>
@@ -114,9 +163,18 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
                   <summary className="text-xs font-medium text-warning hover:underline cursor-pointer list-none">
                     Ganti Perangkat
                   </summary>
-                  <ActionForm action={replaceDeviceWithId} successMessage="Perangkat berhasil diganti" className="flex flex-col gap-3 mt-3 bg-cream/70 p-3.5 rounded-xl">
+                  <ActionForm
+                    action={replaceDeviceWithId}
+                    successMessage="Perangkat berhasil diganti"
+                    className="flex flex-col gap-3 mt-3 bg-cream/70 p-3.5 rounded-xl"
+                  >
                     <Field label="Tipe Perangkat Baru" htmlFor={`type-${d.id}`}>
-                      <Select id={`type-${d.id}`} name="type" required defaultValue={d.type}>
+                      <Select
+                        id={`type-${d.id}`}
+                        name="type"
+                        required
+                        defaultValue={d.type}
+                      >
                         <option value="NVR">NVR</option>
                         <option value="MONITOR">Monitor</option>
                         <option value="CCTV">CCTV</option>
@@ -133,19 +191,42 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
                       />
                     </Field>
                     <Field label="SN Baru" htmlFor={`sn-${d.id}`}>
-                      <Input id={`sn-${d.id}`} name="serialNumber" type="text" required />
+                      <Input
+                        id={`sn-${d.id}`}
+                        name="serialNumber"
+                        type="text"
+                        required
+                      />
                     </Field>
-                    <Field label="Kondisi Perangkat Baru" htmlFor={`condition-${d.id}`}>
-                      <Select id={`condition-${d.id}`} name="condition" required defaultValue="GOOD">
+                    <Field
+                      label="Kondisi Perangkat Baru"
+                      htmlFor={`condition-${d.id}`}
+                    >
+                      <Select
+                        id={`condition-${d.id}`}
+                        name="condition"
+                        required
+                        defaultValue="GOOD"
+                      >
                         <option value="GOOD">Baik</option>
                         <option value="DAMAGED">Rusak</option>
                         <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
                       </Select>
                     </Field>
                     <Field label="Catatan (opsional)" htmlFor={`note-${d.id}`}>
-                      <Textarea id={`note-${d.id}`} name="note" rows={2} placeholder="mis. alasan penggantian" />
+                      <Textarea
+                        id={`note-${d.id}`}
+                        name="note"
+                        rows={2}
+                        placeholder="mis. alasan penggantian"
+                      />
                     </Field>
-                    <Button type="submit" size="sm" variant="warning" className="self-start">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      variant="warning"
+                      className="self-start"
+                    >
                       Simpan Penggantian
                     </Button>
                   </ActionForm>
@@ -161,16 +242,28 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
       {/* Riwayat penggantian device */}
       {atm.deviceHistory.length > 0 && (
         <>
-          <h3 className="font-display text-sm font-semibold text-espresso mb-3">Riwayat Perangkat</h3>
+          <h3 className="font-display text-sm font-semibold text-espresso mb-3">
+            Riwayat Perangkat
+          </h3>
           <div className="flex flex-col gap-2 mb-8">
             {atm.deviceHistory.map((h) => (
-              <Card key={h.id} padded={false} className="p-3.5 flex items-start justify-between gap-3">
+              <Card
+                key={h.id}
+                padded={false}
+                className="p-3.5 flex items-start justify-between gap-3"
+              >
                 <div>
-                  <Badge tone={HISTORY_ACTION_TONE[h.action]}>{HISTORY_ACTION_LABEL[h.action]}</Badge>
+                  <Badge tone={HISTORY_ACTION_TONE[h.action]}>
+                    {HISTORY_ACTION_LABEL[h.action]}
+                  </Badge>
                   <div className="text-sm text-espresso mt-1.5">
                     {h.deviceType} — {h.brand} — SN {h.serialNumber}
                   </div>
-                  {h.note && <div className="text-xs text-espresso-soft/70 mt-1">{h.note}</div>}
+                  {h.note && (
+                    <div className="text-xs text-espresso-soft/70 mt-1">
+                      {h.note}
+                    </div>
+                  )}
                 </div>
                 <span className="text-xs text-espresso-soft/70 whitespace-nowrap">
                   {formatJakartaDateTime(h.createdAt)}
@@ -183,29 +276,47 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
 
       {/* Jadwal kunjungan terkait */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-display text-sm font-semibold text-espresso">Jadwal Kunjungan</h3>
-        <Link href="/visits/new" className="inline-flex items-center gap-1 text-xs text-rose hover:underline">
+        <h3 className="font-display text-sm font-semibold text-espresso">
+          Jadwal Kunjungan
+        </h3>
+        <Link
+          href="/visits/new"
+          className="inline-flex items-center gap-1 text-xs text-rose hover:underline"
+        >
           <FiPlus className="h-3.5 w-3.5" /> Catat Kunjungan
         </Link>
       </div>
       <div className="flex flex-col gap-2 mb-8">
         {atm.visits.length === 0 && (
-          <EmptyState title="Belum ada kunjungan" description="Belum ada jadwal kunjungan untuk ATM ini." />
+          <EmptyState
+            title="Belum ada kunjungan"
+            description="Belum ada jadwal kunjungan untuk ATM ini."
+          />
         )}
         {atm.visits.map((v) => (
-          <Card key={v.id} padded={false} className="p-3.5 flex items-center justify-between gap-3">
+          <Card
+            key={v.id}
+            padded={false}
+            className="p-3.5 flex items-center justify-between gap-3"
+          >
             <div className="min-w-0">
-              <Badge tone={VISIT_TYPE_TONE[v.visitType]}>{VISIT_TYPE_LABEL[v.visitType]}</Badge>
+              <Badge tone={VISIT_TYPE_TONE[v.visitType]}>
+                {VISIT_TYPE_LABEL[v.visitType]}
+              </Badge>
               <span className="text-sm text-espresso ml-2">
                 {v.visitType === "PM"
                   ? v.ticketNumber
                     ? `No. Tiket: ${v.ticketNumber}`
                     : "Tanpa nomor tiket"
                   : v.ticket
-                  ? `No. Tiket: ${v.ticket.ticketNumber ?? "(belum ada nomor)"} — ${v.ticket.problem}`
-                  : "Tiket tidak ditemukan"}
+                    ? `No. Tiket: ${v.ticket.ticketNumber ?? "(belum ada nomor)"} — ${v.ticket.problem}`
+                    : "Tiket tidak ditemukan"}
               </span>
-              {v.keterangan && <div className="text-xs text-espresso-soft/70 mt-1">{v.keterangan}</div>}
+              {v.keterangan && (
+                <div className="text-xs text-espresso-soft/70 mt-1">
+                  {v.keterangan}
+                </div>
+              )}
             </div>
             <span className="text-xs text-espresso-soft/70 whitespace-nowrap">
               {formatJakartaDateTime(v.visitDate)}
@@ -217,7 +328,12 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
       {/* Tambah riwayat + foto ATM */}
       <Card className="flex flex-col gap-4 mb-8">
         <CardTitle>Tambah Riwayat / Foto ATM</CardTitle>
-        <ActionForm action={addAtmLogWithId} successMessage="Riwayat berhasil ditambahkan" resetOnSuccess className="flex flex-col gap-4">
+        <ActionForm
+          action={addAtmLogWithId}
+          successMessage="Riwayat berhasil ditambahkan"
+          resetOnSuccess
+          className="flex flex-col gap-4"
+        >
           <Field label="Catatan (opsional)" htmlFor="atmLogNote">
             <Textarea
               id="atmLogNote"
@@ -236,19 +352,34 @@ export default async function AtmDetailPage({ params }: { params: Promise<{ id: 
       </Card>
 
       {/* Riwayat ATM */}
-      <h3 className="font-display text-sm font-semibold text-espresso mb-3">Riwayat ATM</h3>
+      <h3 className="font-display text-sm font-semibold text-espresso mb-3">
+        Riwayat ATM
+      </h3>
       <div className="flex flex-col gap-3">
         {atm.logs.length === 0 && (
-          <EmptyState title="Belum ada riwayat" description="Belum ada riwayat untuk ATM ini." />
+          <EmptyState
+            title="Belum ada riwayat"
+            description="Belum ada riwayat untuk ATM ini."
+          />
         )}
         {atm.logs.map((log) => (
           <Card key={log.id}>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-espresso-soft/70">{formatJakartaDateTime(log.createdAt)}</span>
-              <DeleteButton action={deleteAtmLog.bind(null, atm.id, log.id)} label="Hapus Riwayat" />
+              <span className="text-xs text-espresso-soft/70">
+                {formatJakartaDateTime(log.createdAt)}
+              </span>
+              <DeleteButton
+                action={deleteAtmLog.bind(null, atm.id, log.id)}
+                label="Hapus Riwayat"
+              />
             </div>
-            {log.note && <p className="text-sm text-espresso-soft mt-2">{log.note}</p>}
-            <PhotoLightbox photos={log.photos} onDeletePhoto={deleteAtmLogPhotoWithId} />
+            {log.note && (
+              <p className="text-sm text-espresso-soft mt-2">{log.note}</p>
+            )}
+            <PhotoLightbox
+              photos={log.photos}
+              onDeletePhoto={deleteAtmLogPhotoWithId}
+            />
           </Card>
         ))}
       </div>
