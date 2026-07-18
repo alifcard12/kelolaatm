@@ -14,7 +14,7 @@ export function Card({
   return (
     <div
       className={`bg-paper border border-taupe/70 rounded-2xl shadow-[var(--shadow-card)] ${
-        padded ? "px-4 py-3 md:p-6" : ""
+        padded ? "px-3 py-2 md:p-6" : ""
       } ${className}`}
       style={style}
       onClick={onClick}

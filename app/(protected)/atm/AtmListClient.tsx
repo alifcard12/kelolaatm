@@ -253,19 +253,19 @@ export function AtmListClient({
               return (
                 <Card
                   key={atm.id}
-                  className="flex flex-col gap-2 border-l-4 cursor-pointer active:opacity-80"
+                  className="flex flex-col  border-l-4 cursor-pointer active:opacity-80"
                   style={{ borderLeftColor: style.text }}
                   onClick={() => goToDetail(atm.id)}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex items-center">
-                      <p className="font-display font-semibold text-espresso">
+                      <p className="font-display text-sm font-semibold text-espresso">
                         {atm.tid} - {atm.location}
                       </p>
                     </div>
                     <RowMenu onDelete={() => onDelete(atm.id)} />
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-espresso-soft">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-espresso-soft">
                     <BranchBadge branch={atm.branch} />
                     <span className="flex items-center gap-1">
                       <FiHome />
