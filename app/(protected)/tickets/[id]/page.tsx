@@ -48,7 +48,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
 
   async function deleteAndRedirect() {
     "use server";
-    await deleteTicket(ticket.id);
+    await deleteTicket(ticket!.id);
     redirect("/tickets");
   }
 

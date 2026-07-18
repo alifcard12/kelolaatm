@@ -30,13 +30,14 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
 
   if (!device) notFound();
 
-  const updateDeviceWithId = updateDevice.bind(null, device.id);
-  const addDeviceLogWithId = addDeviceLog.bind(null, device.id);
-  const deleteDeviceLogPhotoWithId = deleteDeviceLogPhoto.bind(null, device.id);
+  const currentDevice = device;
+  const updateDeviceWithId = updateDevice.bind(null, currentDevice.id);
+  const addDeviceLogWithId = addDeviceLog.bind(null, currentDevice.id);
+  const deleteDeviceLogPhotoWithId = deleteDeviceLogPhoto.bind(null, currentDevice.id);
 
   async function deleteAndRedirect() {
     "use server";
-    await deleteDevice(device.id);
+    await deleteDevice(currentDevice.id);
     redirect("/devices");
   }
 
