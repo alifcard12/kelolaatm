@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------- *
+ * Design tokens — Kelola ATM
+ * Palette: espresso (ink), rose (accent/action), cream (surface), taupe
+ * (line/soft-surface). Semantic status colors are separate, warm-leaning
+ * tones so they read clearly against the palette above.
+ * ---------------------------------------------------------------------- */
+@theme inline {
+  --color-espresso: #4d3c3a;
+  --color-espresso-soft: #7a635f;
+  --color-rose: #ab4f65;
+  --color-rose-dark: #8f3f53;
+  --color-rose-soft: #f1dfe3;
+  --color-cream: #f3eee7;
+  --color-taupe: #dacdc5;
+  --color-taupe-dark: #c2b0a5;
+  --color-paper: #fffdfb;
+
+  --color-success: #3f6b4e;
+  --color-success-soft: #e2ece2;
+  --color-warning: #9c6b2e;
+  --color-warning-soft: #f3e6d2;
+  --color-danger: #a53c46;
+  --color-danger-soft: #f5dfdf;
+  --color-info: #47607a;
+  --color-info-soft: #e4ebf0;
+
+  --shadow-card: 0 1px 2px rgba(77, 60, 58, 0.06), 0 8px 24px -12px rgba(77, 60, 58, 0.16);
+  --shadow-pop: 0 12px 32px -8px rgba(77, 60, 58, 0.28);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  background-color: var(--color-cream);
+  color: var(--color-espresso);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+.font-display {
+  font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+  font-feature-settings: "ss01" 1;
+}
+
+/* Consistent, visible focus ring that matches the palette everywhere,
+   including native controls that don't take Tailwind ring utilities. */
+:focus-visible {
+  outline: 2px solid var(--color-rose);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--color-rose-soft);
+  color: var(--color-espresso);
+}
+
+/* Slim, quiet scrollbars that fit the warm palette (WebKit + Firefox). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-taupe-dark) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--color-taupe-dark);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes toast-in-kf {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.toast-in {
+  animation: toast-in-kf 0.2s ease-out;
+}
+
+@keyframes modal-in-kf {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.modal-in {
+  animation: modal-in-kf 0.15s ease-out;
+}

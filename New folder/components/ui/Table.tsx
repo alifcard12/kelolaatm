@@ -29,19 +29,11 @@ export function Tbody({ children }: { children: React.ReactNode }) {
 export function Tr({
   children,
   className = "",
-  style,
-  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
-  onClick?: () => void;
 }) {
-  return (
-    <tr className={`hover:bg-cream/60 transition-colors ${className}`} style={style} onClick={onClick}>
-      {children}
-    </tr>
-  );
+  return <tr className={`hover:bg-cream/60 transition-colors ${className}`}>{children}</tr>;
 }
 
 export function Td({ className = "", ...props }: TdHTMLAttributes<HTMLTableCellElement>) {

@@ -2,22 +2,16 @@ export function Card({
   children,
   className = "",
   padded = true,
-  style,
-  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
   padded?: boolean;
-  style?: React.CSSProperties;
-  onClick?: () => void;
 }) {
   return (
     <div
       className={`bg-paper border border-taupe/70 rounded-2xl shadow-[var(--shadow-card)] ${
-        padded ? "px-4 py-3 md:p-6" : ""
+        padded ? "p-5 md:p-6" : ""
       } ${className}`}
-      style={style}
-      onClick={onClick}
     >
       {children}
     </div>
@@ -32,9 +26,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3
-      className={`font-display text-base font-semibold text-espresso ${className}`}
-    >
+    <h3 className={`font-display text-base font-semibold text-espresso ${className}`}>
       {children}
     </h3>
   );

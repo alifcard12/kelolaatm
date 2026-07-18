@@ -19,7 +19,7 @@ export function DeleteButton({
   className = "",
 }: {
   action: () => Promise<void>;
-  label?: React.ReactNode;
+  label?: string;
   confirmTitle?: string;
   confirmDescription?: string;
   successMessage?: string;
@@ -55,7 +55,7 @@ export function DeleteButton({
       disabled={pending}
       className={`text-xs font-medium text-danger hover:underline disabled:opacity-50 ${className}`}
     >
-      {pending && typeof label === "string" ? "Menghapus…" : label}
+      {pending ? "Menghapus…" : label}
     </button>
   );
 }

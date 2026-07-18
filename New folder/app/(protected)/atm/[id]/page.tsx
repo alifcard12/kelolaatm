@@ -12,7 +12,6 @@ import { deleteDevice, replaceDevice } from "../../devices/actions";
 import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
-import CopyTextButton from "@/components/CopyTextButton";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
@@ -78,30 +77,6 @@ export default async function AtmDetailPage({
       {/* Edit info ATM */}
       <Card className="flex flex-col gap-4 mb-8">
         <CardTitle>Info ATM</CardTitle>
-
-        <div className="flex flex-wrap gap-2 -mt-1">
-          <CopyTextButton
-            text={String(atm.tid)}
-            label={`Copy TID`}
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
-          />
-          <CopyTextButton
-            text={atm.location}
-            label="Copy Lokasi"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
-          />
-          <CopyTextButton
-            text={atm.branch}
-            label="Copy Branch"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
-          />
-          <CopyTextButton
-            text={atm.ssb}
-            label="Copy SSB"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
-          />
-        </div>
-
         <ActionForm
           action={updateAtmWithId}
           successMessage="Info ATM berhasil disimpan"
