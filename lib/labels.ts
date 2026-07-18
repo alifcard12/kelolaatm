@@ -60,3 +60,31 @@ export const HISTORY_ACTION_TONE: Record<string, BadgeTone> = {
   REPLACED: "warning",
   REMOVED: "danger",
 };
+
+export const FINANCE_TYPE_LABEL: Record<string, string> = {
+  DEBIT: "Debit (Keluar)",
+  CREDIT: "Credit (Masuk)",
+};
+
+export const FINANCE_TYPE_TONE: Record<string, BadgeTone> = {
+  DEBIT: "danger",
+  CREDIT: "success",
+};
+
+export const FINANCE_CATEGORY_LABEL: Record<string, string> = {
+  KETERANGAN: "Keterangan",
+  TRANSPORTASI: "Transportasi",
+  SPJ: "SPJ",
+  HOTEL: "Hotel",
+  PENGIRIMAN: "Pengiriman",
+  OPERASIONAL: "Operasional",
+};
+
+export const FINANCE_CATEGORY_TONE: Record<string, BadgeTone> = {
+  KETERANGAN: "neutral",
+  TRANSPORTASI: "info",
+  SPJ: "warning",
+  HOTEL: "warning",
+  PENGIRIMAN: "info",
+  OPERASIONAL: "neutral",
+};

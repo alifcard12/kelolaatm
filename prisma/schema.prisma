@@ -216,6 +216,36 @@ model TicketAttachment {
   @@map("ticket_attachments")
 }
 
+enum FinanceType {
+  DEBIT
+  CREDIT
+}
+
+enum FinanceCategory {
+  KETERANGAN
+  TRANSPORTASI
+  SPJ
+  HOTEL
+  PENGIRIMAN
+  OPERASIONAL
+}
+
+// Catatan uang operasional (kas masuk/keluar), difilter per bulan di UI.
+model FinanceEntry {
+  id          String          @id @default(cuid())
+  date        DateTime // tanggal transaksi (diisi manual, bukan createdAt)
+  description String
+  type        FinanceType
+  amount      Int // nominal dalam Rupiah, selalu bernilai positif
+  category    FinanceCategory
+  notes       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([date])
+  @@map("finance_entries")
+}
+
 enum VisitType {
   PM
   CM
