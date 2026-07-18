@@ -80,6 +80,29 @@ export const FINANCE_CATEGORY_LABEL: Record<string, string> = {
   OPERASIONAL: "Operasional",
 };
 
+export const TRAVEL_VEHICLE_LABEL: Record<string, string> = {
+  AVANZA: "Avanza",
+  XENIA: "Xenia",
+  SIGRA: "Sigra",
+  XPANDER: "Xpander",
+};
+
+export const HOTEL_ROOM_TYPE_LABEL: Record<string, string> = {
+  SUPER_SINGLE: "Super Single",
+  DELUXE_DOUBLE: "Deluxe Double",
+  DELUXE_TWIN: "Deluxe Twin",
+  EXECUTIVE: "Executive",
+};
+
+export const HOTEL_PAYMENT_METHOD_LABEL: Record<string, string> = {
+  ALFAMART: "Alfamart",
+  BRIVA: "BRIVA",
+  INDOMARET: "Indomaret",
+  OVO: "OVO",
+  SHOPEEPAY: "ShopeePay",
+  QRIS: "QRIS",
+};
+
 export const FINANCE_CATEGORY_TONE: Record<string, BadgeTone> = {
   KETERANGAN: "neutral",
   TRANSPORTASI: "info",

@@ -242,8 +242,84 @@ model FinanceEntry {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
+  // Diisi otomatis kalau entri ini datang dari pemesanan Travel atau Hotel.
+  travel Travel?
+  hotel  Hotel?
+
   @@index([date])
   @@map("finance_entries")
+}
+
+enum TravelVehicle {
+  AVANZA
+  XENIA
+  SIGRA
+  XPANDER
+}
+
+// Pemesanan travel. Setiap pemesanan otomatis membuat satu FinanceEntry (debit,
+// kategori TRANSPORTASI) yang tetap disinkronkan saat travel diedit/dihapus.
+model Travel {
+  id             String        @id @default(cuid())
+  invoiceNo      String        @unique // huruf kapital + angka acak 8 karakter, dibuat otomatis
+  customerName   String
+  orderDate      DateTime
+  departureDate  DateTime
+  origin         String
+  destination    String
+  vehicle        TravelVehicle
+  price          Int // harga travel dalam Rupiah
+  passengerCount Int
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  financeEntry   FinanceEntry? @relation(fields: [financeEntryId], references: [id], onDelete: SetNull)
+  financeEntryId String?       @unique
+
+  @@map("travels")
+}
+
+enum HotelRoomType {
+  SUPER_SINGLE
+  DELUXE_DOUBLE
+  DELUXE_TWIN
+  EXECUTIVE
+}
+
+enum HotelPaymentMethod {
+  ALFAMART
+  BRIVA
+  INDOMARET
+  OVO
+  SHOPEEPAY
+  QRIS
+}
+
+// Pemesanan hotel. Setiap pemesanan otomatis membuat satu FinanceEntry (debit,
+// kategori HOTEL) yang tetap disinkronkan saat pemesanan diedit/dihapus.
+model Hotel {
+  id             String             @id @default(cuid())
+  bookingNo      String             @unique // angka acak 19 digit, dibuat otomatis
+  poBooking      String             @unique // angka acak 9 digit, dibuat otomatis
+  customerName   String
+  email          String
+  phone          String
+  bookingDate    DateTime
+  checkinDate    DateTime
+  hotelName      String
+  hotelAddress   String
+  roomType       HotelRoomType
+  duration       Int // jumlah malam
+  guestCount     Int
+  price          Int // harga hotel dalam Rupiah
+  paymentMethod  HotelPaymentMethod
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  financeEntry   FinanceEntry? @relation(fields: [financeEntryId], references: [id], onDelete: SetNull)
+  financeEntryId String?       @unique
+
+  @@map("hotels")
 }
 
 enum VisitType {
