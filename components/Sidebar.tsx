@@ -14,6 +14,7 @@ const navItems = [
   { href: "/tickets", label: "Ticket" },
   { href: "/travel", label: "Travel" },
   { href: "/hotel", label: "Hotel" },
+  { href: "/product", label: "Product" },
   { href: "/finance", label: "Keuangan Operasional" },
   { href: "/visits", label: "Jadwal Kunjungan" },
 ];
