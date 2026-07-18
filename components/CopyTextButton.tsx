@@ -40,7 +40,7 @@ export default function CopyTextButton({
       onClick={handleCopy}
       className={
         className ??
-        "bg-slate-900 text-white text-xs px-3 py-1.5 rounded-md hover:bg-slate-700"
+        "bg-espresso text-paper text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-espresso/90 transition-colors"
       }
     >
       {copied ? "Tersalin!" : label}

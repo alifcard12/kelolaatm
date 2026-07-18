@@ -1,58 +1,39 @@
 import { createAtm } from "../actions";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { ActionForm } from "@/components/ui/ActionForm";
 
 export default function NewAtmPage() {
   return (
     <div className="max-w-md">
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Tambah ATM</h2>
+      <PageHeader title="Tambah ATM" />
 
-      <form action={createAtm} className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200">
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">TID</label>
-          <input
-            name="tid"
-            type="number"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+      <Card>
+        <ActionForm action={createAtm} successMessage="ATM berhasil ditambahkan" className="flex flex-col gap-4">
+          <Field label="TID" htmlFor="tid">
+            <Input id="tid" name="tid" type="number" required />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Location</label>
-          <input
-            name="location"
-            type="text"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+          <Field label="Location" htmlFor="location">
+            <Input id="location" name="location" type="text" required />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Branch</label>
-          <input
-            name="branch"
-            type="text"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+          <Field label="Branch" htmlFor="branch">
+            <Input id="branch" name="branch" type="text" required />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">SSB</label>
-          <input
-            name="ssb"
-            type="text"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+          <Field label="SSB" htmlFor="ssb">
+            <Input id="ssb" name="ssb" type="text" required />
+          </Field>
 
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 mt-2"
-        >
-          Simpan
-        </button>
-      </form>
+          <Button type="submit" className="mt-2 self-start">
+            Simpan
+          </Button>
+        </ActionForm>
+      </Card>
     </div>
   );
 }

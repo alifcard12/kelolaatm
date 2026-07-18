@@ -39,7 +39,7 @@ export function TicketAttachments({
                 <img
                   src={a.url}
                   alt={a.filename ?? "Lampiran"}
-                  className="w-20 h-20 object-cover rounded-md border border-slate-200 cursor-pointer hover:opacity-80 transition-opacity"
+                  className="w-20 h-20 object-cover rounded-xl border border-taupe/70 cursor-pointer hover:opacity-80 transition-opacity"
                 />
               </button>
             ) : (
@@ -47,11 +47,11 @@ export function TicketAttachments({
                 href={downloadUrl(a.url)}
                 target="_blank"
                 rel="noreferrer"
-                className="w-20 h-20 flex flex-col items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-1 hover:bg-slate-100 transition-colors"
+                className="w-20 h-20 flex flex-col items-center justify-center gap-1 rounded-xl border border-taupe/70 bg-cream px-1 hover:bg-taupe/40 transition-colors"
                 title={a.filename ?? "PDF"}
               >
-                <span className="text-xs font-semibold text-red-500">PDF</span>
-                <span className="text-[9px] text-slate-500 truncate w-full text-center">
+                <span className="text-xs font-semibold text-danger">PDF</span>
+                <span className="text-[9px] text-espresso-soft truncate w-full text-center">
                   {a.filename ?? "Lampiran"}
                 </span>
               </a>
@@ -61,7 +61,7 @@ export function TicketAttachments({
                 <button
                   type="submit"
                   title="Hapus lampiran"
-                  className="bg-white border border-slate-300 rounded-full w-5 h-5 text-xs leading-none text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="bg-paper border border-taupe-dark/60 rounded-full w-5 h-5 text-xs leading-none text-danger shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   ×
                 </button>
@@ -73,30 +73,30 @@ export function TicketAttachments({
 
       {active && (
         <div
-          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-espresso/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setActive(null)}
         >
           <div
-            className="bg-white rounded-lg p-4 max-w-lg w-full flex flex-col items-center gap-3"
+            className="bg-paper rounded-2xl p-4 max-w-lg w-full flex flex-col items-center gap-3 shadow-[var(--shadow-pop)]"
             onClick={(e) => e.stopPropagation()}
           >
             <img
               src={active.url}
               alt={active.filename ?? "Lampiran"}
-              className="max-h-[70vh] w-auto rounded-md object-contain"
+              className="max-h-[70vh] w-auto rounded-xl object-contain"
             />
             <div className="flex gap-2 w-full">
               <a
                 href={downloadUrl(active.url)}
                 download
-                className="flex-1 text-center bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700"
+                className="flex-1 text-center bg-espresso text-paper text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-espresso/90 transition-colors"
               >
                 Download
               </a>
               <button
                 type="button"
                 onClick={() => setActive(null)}
-                className="flex-1 bg-slate-100 text-slate-700 text-sm px-4 py-2 rounded-md hover:bg-slate-200"
+                className="flex-1 bg-cream text-espresso text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-taupe/60 transition-colors"
               >
                 Tutup
               </button>

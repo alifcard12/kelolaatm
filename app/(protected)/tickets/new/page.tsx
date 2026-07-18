@@ -1,58 +1,55 @@
 import { prisma } from "@/lib/prisma";
 import { createTicket } from "../actions";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Select, Textarea } from "@/components/ui/Input";
+import { Button, LinkButton } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ActionForm } from "@/components/ui/ActionForm";
 
 export default async function NewTicketPage() {
   const atms = await prisma.atm.findMany({ orderBy: { tid: "asc" } });
 
   return (
     <div className="max-w-md">
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Buka Tiket Baru</h2>
+      <PageHeader title="Buka Tiket Baru" />
 
       {atms.length === 0 ? (
-        <p className="text-slate-500 text-sm">
-          Belum ada data ATM. Tambahkan ATM dulu di menu ATM sebelum membuka tiket.
-        </p>
+        <EmptyState
+          title="Belum ada data ATM"
+          description="Tambahkan ATM dulu sebelum membuka tiket."
+          action={<LinkButton href="/atm/new" size="sm">Tambah ATM</LinkButton>}
+        />
       ) : (
-        <form
-          action={createTicket}
-          className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200"
-        >
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">ATM</label>
-            <select
-              name="atmId"
-              required
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
+        <Card>
+          <ActionForm action={createTicket} successMessage="Tiket berhasil dibuka" className="flex flex-col gap-4">
+            <Field
+              label="ATM"
+              htmlFor="atmId"
+              hint="Lokasi, kanca, TID, dan SSB otomatis diambil dari data ATM ini."
             >
-              {atms.map((atm) => (
-                <option key={atm.id} value={atm.id}>
-                  {atm.tid} — {atm.location} ({atm.branch})
+              <Select id="atmId" name="atmId" required defaultValue="">
+                <option value="" disabled>
+                  Pilih ATM
                 </option>
-              ))}
-            </select>
-            <p className="text-xs text-slate-400 mt-1">
-              Lokasi, kanca, TID, dan SSB otomatis diambil dari data ATM ini.
-            </p>
-          </div>
+                {atms.map((atm) => (
+                  <option key={atm.id} value={atm.id}>
+                    {atm.tid} — {atm.location} ({atm.branch})
+                  </option>
+                ))}
+              </Select>
+            </Field>
 
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">Problem</label>
-            <textarea
-              name="problem"
-              rows={3}
-              required
-              placeholder="mis. GROUNDING TINGGI"
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
+            <Field label="Problem" htmlFor="problem">
+              <Textarea id="problem" name="problem" rows={3} required placeholder="mis. GROUNDING TINGGI" />
+            </Field>
 
-          <button
-            type="submit"
-            className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 mt-2"
-          >
-            Buka Tiket
-          </button>
-        </form>
+            <Button type="submit" className="mt-2 self-start">
+              Buka Tiket
+            </Button>
+          </ActionForm>
+        </Card>
       )}
     </div>
   );

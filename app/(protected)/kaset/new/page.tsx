@@ -1,68 +1,51 @@
 import { createKaset } from "../actions";
 import { PhotoUploader } from "@/components/PhotoUploader";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { ActionForm } from "@/components/ui/ActionForm";
 
 export default function NewKasetPage() {
   return (
     <div className="max-w-md">
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Tambah Kaset</h2>
+      <PageHeader title="Tambah Kaset" />
 
-      <form action={createKaset} className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200">
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Serial Number (SN)</label>
-          <input
-            name="serialNumber"
-            type="text"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+      <Card>
+        <ActionForm action={createKaset} successMessage="Kaset berhasil ditambahkan" className="flex flex-col gap-4">
+          <Field label="Serial Number (SN)" htmlFor="serialNumber">
+            <Input id="serialNumber" name="serialNumber" type="text" required />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Tipe Kaset</label>
-          <select
-            name="type"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="ALL_IN">All in One</option>
-            <option value="CURRENCY">Currency</option>
-          </select>
-        </div>
+          <Field label="Tipe Kaset" htmlFor="type">
+            <Select id="type" name="type" required defaultValue="ALL_IN">
+              <option value="ALL_IN">All in One</option>
+              <option value="CURRENCY">Currency</option>
+            </Select>
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Kondisi Awal</label>
-          <select
-            name="condition"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="GOOD">Baik</option>
-            <option value="DAMAGED">Rusak</option>
-            <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
-          </select>
-        </div>
+          <Field label="Kondisi Awal" htmlFor="condition">
+            <Select id="condition" name="condition" required defaultValue="GOOD">
+              <option value="GOOD">Baik</option>
+              <option value="DAMAGED">Rusak</option>
+              <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
+            </Select>
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Problem (opsional)</label>
-          <textarea
-            name="problem"
-            rows={3}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+          <Field label="Problem (opsional)" htmlFor="problem">
+            <Textarea id="problem" name="problem" rows={3} />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Foto (opsional, bisa lebih dari 1)</label>
-          <PhotoUploader />
-        </div>
+          <Field label="Foto (opsional, bisa lebih dari 1)">
+            <PhotoUploader />
+          </Field>
 
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 mt-2"
-        >
-          Simpan
-        </button>
-      </form>
+          <Button type="submit" className="mt-2 self-start">
+            Simpan
+          </Button>
+        </ActionForm>
+      </Card>
     </div>
   );
 }

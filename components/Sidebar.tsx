@@ -1,5 +1,11 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
+import { BrandMark } from "@/components/brand-mark";
+import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
 
 const navItems = [
   { href: "/atm", label: "ATM" },
@@ -10,30 +16,137 @@ const navItems = [
   { href: "/visits", label: "Jadwal Kunjungan" },
 ];
 
-export default function Sidebar() {
+function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function Brand() {
   return (
-    <aside className="w-60 shrink-0 border-r border-slate-200 bg-white min-h-screen p-4">
-      <h1 className="text-lg font-semibold text-slate-800 mb-6 px-2">Kelola ATM</h1>
-      <nav className="flex flex-col gap-1">
-        {navItems.map((item) => (
+    <Link href="/" className="flex items-center gap-3 px-2">
+      <BrandMark className="h-9 w-9 shrink-0" />
+      <div className="leading-tight">
+        <p className="font-display text-base font-semibold text-espresso">Kelola ATM</p>
+        <p className="text-[11px] text-espresso-soft">Operasional & Servis</p>
+      </div>
+    </Link>
+  );
+}
+
+function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <nav className="flex flex-col gap-1">
+      {navItems.map((item) => {
+        const active = isActive(pathname, item.href);
+        return (
           <Link
             key={item.href}
             href={item.href}
-            className="px-3 py-2 rounded-md text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
+            className={`relative px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+              active
+                ? "bg-rose text-paper shadow-sm shadow-rose/25"
+                : "text-espresso-soft hover:bg-taupe/50 hover:text-espresso"
+            }`}
           >
             {item.label}
           </Link>
-        ))}
-      </nav>
+        );
+      })}
+    </nav>
+  );
+}
 
-      <form action={logout} className="mt-6 px-2">
+function LogoutForm({ className = "" }: { className?: string }) {
+  return (
+    <form action={logout} className={className}>
+      <button
+        type="submit"
+        className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium text-espresso-soft hover:bg-danger-soft hover:text-danger transition-colors"
+      >
+        <FiLogOut />
+        Keluar
+      </button>
+    </form>
+  );
+}
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  // Tutup drawer otomatis setiap kali pindah halaman.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Kunci scroll body saat drawer mobile terbuka.
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <>
+      {/* --- Top bar mobile (< md) --- */}
+      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-taupe/70 bg-cream/90 backdrop-blur px-4 py-3">
+        <Brand />
         <button
-          type="submit"
-          className="w-full text-left px-3 py-2 rounded-md text-sm text-slate-500 hover:bg-slate-100 hover:text-red-600 transition-colors"
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Buka menu"
+          aria-expanded={open}
+          className="flex items-center justify-center h-10 w-10 rounded-xl text-espresso hover:bg-taupe/50 transition-colors"
         >
-          Keluar
+          <FiMenu />
         </button>
-      </form>
-    </aside>
+      </header>
+
+      {/* --- Drawer mobile --- */}
+      <div
+        className={`md:hidden fixed inset-0 z-40 transition-opacity duration-200 ${
+          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        }`}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div
+          onClick={() => setOpen(false)}
+          className="absolute inset-0 bg-espresso/40 backdrop-blur-[1px]"
+        />
+        <div
+          className={`absolute inset-y-0 left-0 w-72 max-w-[80%] bg-cream border-r border-taupe/70 p-4 flex flex-col gap-6 shadow-[var(--shadow-pop)] transition-transform duration-200 ${
+            open ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <Brand />
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Tutup menu"
+              className="flex items-center justify-center h-9 w-9 rounded-xl text-espresso-soft hover:bg-taupe/50 transition-colors"
+            >
+              <FiX className="h-4 w-4" />
+            </button>
+          </div>
+          <NavLinks pathname={pathname} onNavigate={() => setOpen(false)} />
+          <div className="mt-auto border-t border-taupe/70 pt-3">
+            <LogoutForm />
+          </div>
+        </div>
+      </div>
+
+      {/* --- Sidebar desktop (≥ md) --- */}
+      <aside className="hidden md:flex w-64 shrink-0 flex-col gap-8 border-r border-taupe/70 bg-cream sticky top-0 h-screen p-5">
+        <Brand />
+        <NavLinks pathname={pathname} />
+        <div className="mt-auto border-t border-taupe/70 pt-3">
+          <LogoutForm />
+        </div>
+      </aside>
+    </>
   );
 }

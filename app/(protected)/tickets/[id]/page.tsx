@@ -13,6 +13,16 @@ import { buildOpenTicketText, buildCloseTicketText } from "@/lib/ticketText";
 import CopyTextButton from "@/components/CopyTextButton";
 import { FileUploader } from "@/components/FileUploader";
 import { TicketAttachments } from "@/components/TicketAttachments";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card, CardTitle } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { FiChevronLeft } from "react-icons/fi";
+import { ActionForm } from "@/components/ui/ActionForm";
+import { TICKET_STATUS_LABEL, TICKET_STATUS_TONE } from "@/lib/labels";
 
 function deviceLabel(d: { type: string; brand: string; serialNumber: string }) {
   return `${d.type} — ${d.brand} — SN ${d.serialNumber}`;
@@ -35,6 +45,12 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
   const updateTicketWithId = updateTicket.bind(null, ticket.id);
   const closeTicketWithId = closeTicket.bind(null, ticket.id);
   const deleteAttachmentWithId = deleteTicketAttachment.bind(null, ticket.id);
+
+  async function deleteAndRedirect() {
+    "use server";
+    await deleteTicket(ticket.id);
+    redirect("/tickets");
+  }
 
   const openText = buildOpenTicketText({
     date: ticket.openedAt,
@@ -61,41 +77,22 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <Link href="/tickets" className="text-xs text-slate-400 hover:underline">
-            ← Kembali ke Tiket
-          </Link>
-          <h2 className="text-2xl font-semibold text-slate-800 mt-1">
-            {ticket.atm.tid} — {ticket.atm.location}
-          </h2>
-          <div className="text-xs text-slate-400">
-            {ticket.atm.branch} · SSB: {ticket.atm.ssb}
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              ticket.status === "OPEN"
-                ? "bg-amber-100 text-amber-700"
-                : "bg-green-100 text-green-700"
-            }`}
-          >
-            {ticket.status}
-          </span>
-          <form
-            action={async () => {
-              "use server";
-              await deleteTicket(ticket.id);
-              redirect("/tickets");
-            }}
-          >
-            <button className="text-red-500 hover:underline text-xs">Hapus Tiket</button>
-          </form>
-        </div>
-      </div>
+      <Link href="/tickets" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
+        <FiChevronLeft /> Kembali ke Tiket
+      </Link>
 
-      <div className="text-xs text-slate-400 mb-6">
+      <PageHeader
+        title={`${ticket.atm.tid} — ${ticket.atm.location}`}
+        description={`${ticket.atm.branch} · SSB: ${ticket.atm.ssb}`}
+        action={
+          <div className="flex items-center gap-3">
+            <Badge tone={TICKET_STATUS_TONE[ticket.status]}>{TICKET_STATUS_LABEL[ticket.status]}</Badge>
+            <DeleteButton action={deleteAndRedirect} label="Hapus Tiket" />
+          </div>
+        }
+      />
+
+      <div className="text-xs text-espresso-soft/70 mb-6">
         Dibuka: {formatJakartaDateTime(ticket.openedAt)}
         {ticket.status === "CLOSED" && ticket.closedAt && (
           <> · Ditutup: {formatJakartaDateTime(ticket.closedAt)}</>
@@ -108,138 +105,106 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           <CopyTextButton
             text={closeText}
             label="Copy Teks Close"
-            className="bg-green-700 text-white text-xs px-3 py-1.5 rounded-md hover:bg-green-600"
+            className="bg-success text-paper text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-success/90 transition-colors"
           />
         )}
         {ticket.status === "CLOSED" && (
-          <form
-            action={async () => {
-              "use server";
-              await reopenTicket(ticket.id);
-            }}
-          >
-            <button className="text-slate-500 hover:underline text-xs px-2">Buka Kembali</button>
-          </form>
+          <ActionForm action={reopenTicket.bind(null, ticket.id)} successMessage="Tiket dibuka kembali">
+            <button className="text-espresso-soft hover:text-rose text-xs px-2 transition-colors">
+              Buka Kembali
+            </button>
+          </ActionForm>
         )}
       </div>
 
       {/* Edit problem & device rujukan */}
-      <form
-        action={updateTicketWithId}
-        className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200 mb-6"
-      >
-        <h3 className="text-sm font-semibold text-slate-700">Edit Tiket</h3>
+      <Card className="flex flex-col gap-4 mb-6">
+        <CardTitle>Edit Tiket</CardTitle>
+        <ActionForm action={updateTicketWithId} successMessage="Tiket berhasil diperbarui" className="flex flex-col gap-4">
+          <Field label="Problem" htmlFor="problem">
+            <Textarea id="problem" name="problem" rows={3} required defaultValue={ticket.problem} />
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Problem</label>
-          <textarea
-            name="problem"
-            rows={3}
-            required
-            defaultValue={ticket.problem}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
+          <Field label="Device Rujukan (opsional)" htmlFor="deviceId">
+            <Select id="deviceId" name="deviceId" defaultValue={ticket.deviceId ?? ""}>
+              <option value="">Tidak ada</option>
+              {ticket.atm.devices.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {deviceLabel(d)}
+                </option>
+              ))}
+            </Select>
+            {ticket.atm.devices.length === 0 && (
+              <p className="text-xs text-espresso-soft/70 mt-1.5">
+                Belum ada perangkat terdaftar untuk TID {ticket.atm.tid} ini.
+              </p>
+            )}
+          </Field>
 
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Device Rujukan (opsional)</label>
-          <select
-            name="deviceId"
-            defaultValue={ticket.deviceId ?? ""}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Tidak ada</option>
-            {ticket.atm.devices.map((d) => (
-              <option key={d.id} value={d.id}>
-                {deviceLabel(d)}
-              </option>
-            ))}
-          </select>
-          {ticket.atm.devices.length === 0 && (
-            <p className="text-xs text-slate-400 mt-1">
-              Belum ada perangkat terdaftar untuk TID {ticket.atm.tid} ini.
-            </p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
-        >
-          Simpan Perubahan
-        </button>
-      </form>
+          <Button type="submit" className="self-start">
+            Simpan Perubahan
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Tutup / edit detail penutupan tiket */}
-      <form
-        action={closeTicketWithId}
-        className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200 mb-6"
-      >
-        <h3 className="text-sm font-semibold text-slate-700">
-          {ticket.status === "OPEN" ? "Tutup Tiket" : "Edit Detail Penutupan"}
-        </h3>
-
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Nomor Tiket (CM)</label>
-          <input
-            name="ticketNumber"
-            type="text"
-            required
-            defaultValue={ticket.ticketNumber ?? ""}
-            placeholder="mis. 54564554"
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Action</label>
-          <textarea
-            name="action"
-            rows={2}
-            required
-            defaultValue={ticket.action ?? ""}
-            placeholder="mis. REPLACE PSU, TES FUNGSI OK"
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Device Rujukan (opsional)</label>
-          <select
-            name="deviceId"
-            defaultValue={ticket.deviceId ?? ""}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Tidak ada</option>
-            {ticket.atm.devices.map((d) => (
-              <option key={d.id} value={d.id}>
-                {deviceLabel(d)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">
-            Lampiran Foto / PDF (opsional, bisa lebih dari 1)
-          </label>
-          <FileUploader />
-        </div>
-
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
+      <Card className="flex flex-col gap-4 mb-6">
+        <CardTitle>{ticket.status === "OPEN" ? "Tutup Tiket" : "Edit Detail Penutupan"}</CardTitle>
+        <ActionForm
+          action={closeTicketWithId}
+          successMessage={ticket.status === "OPEN" ? "Tiket berhasil ditutup" : "Perubahan berhasil disimpan"}
+          resetOnSuccess={false}
+          className="flex flex-col gap-4"
         >
-          {ticket.status === "OPEN" ? "Tutup Tiket" : "Simpan Perubahan"}
-        </button>
-      </form>
+          <Field label="Nomor Tiket (CM)" htmlFor="ticketNumber">
+            <Input
+              id="ticketNumber"
+              name="ticketNumber"
+              type="text"
+              required
+              defaultValue={ticket.ticketNumber ?? ""}
+              placeholder="mis. 54564554"
+            />
+          </Field>
+
+          <Field label="Action" htmlFor="action">
+            <Textarea
+              id="action"
+              name="action"
+              rows={2}
+              required
+              defaultValue={ticket.action ?? ""}
+              placeholder="mis. REPLACE PSU, TES FUNGSI OK"
+            />
+          </Field>
+
+          <Field label="Device Rujukan (opsional)" htmlFor="deviceId2">
+            <Select id="deviceId2" name="deviceId" defaultValue={ticket.deviceId ?? ""}>
+              <option value="">Tidak ada</option>
+              {ticket.atm.devices.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {deviceLabel(d)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+
+          <Field label="Lampiran Foto / PDF (opsional, bisa lebih dari 1)">
+            <FileUploader />
+          </Field>
+
+          <Button type="submit" className="self-start">
+            {ticket.status === "OPEN" ? "Tutup Tiket" : "Simpan Perubahan"}
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Lampiran yang sudah ada */}
       {ticket.attachments.length > 0 && (
-        <div className="bg-white p-6 rounded-lg border border-slate-200">
-          <h3 className="text-sm font-semibold text-slate-700 mb-1">Lampiran</h3>
+        <Card>
+          <CardTitle className="mb-1">Lampiran</CardTitle>
           <TicketAttachments attachments={ticket.attachments} onDelete={deleteAttachmentWithId} />
-        </div>
+        </Card>
       )}
     </div>
   );

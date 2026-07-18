@@ -1,0 +1,62 @@
+/**
+ * Label & "tone" (warna semantik) terpusat untuk semua enum yang tampil di UI.
+ * Dulu tersebar & terduplikasi di banyak halaman (atm, devices, kaset, ...) —
+ * sekarang satu sumber kebenaran supaya konsisten dan gampang diubah.
+ */
+import type { BadgeTone } from "@/components/ui/Badge";
+
+export const CONDITION_LABEL: Record<string, string> = {
+  GOOD: "Baik",
+  DAMAGED: "Rusak",
+  NEEDS_REPLACEMENT: "Perlu Ganti",
+};
+
+export const CONDITION_TONE: Record<string, BadgeTone> = {
+  GOOD: "success",
+  DAMAGED: "danger",
+  NEEDS_REPLACEMENT: "warning",
+};
+
+export const DEVICE_TYPE_LABEL: Record<string, string> = {
+  NVR: "NVR",
+  MONITOR: "Monitor",
+  CCTV: "CCTV",
+  UPS: "UPS",
+};
+
+export const KASET_TYPE_LABEL: Record<string, string> = {
+  ALL_IN: "All in One",
+  CURRENCY: "Currency",
+};
+
+export const TICKET_STATUS_LABEL: Record<string, string> = {
+  OPEN: "Open",
+  CLOSED: "Closed",
+};
+
+export const TICKET_STATUS_TONE: Record<string, BadgeTone> = {
+  OPEN: "warning",
+  CLOSED: "success",
+};
+
+export const VISIT_TYPE_LABEL: Record<string, string> = {
+  PM: "PM — Preventive",
+  CM: "CM — Corrective",
+};
+
+export const VISIT_TYPE_TONE: Record<string, BadgeTone> = {
+  PM: "info",
+  CM: "warning",
+};
+
+export const HISTORY_ACTION_LABEL: Record<string, string> = {
+  ADDED: "Dipasang",
+  REPLACED: "Diganti",
+  REMOVED: "Dilepas",
+};
+
+export const HISTORY_ACTION_TONE: Record<string, BadgeTone> = {
+  ADDED: "success",
+  REPLACED: "warning",
+  REMOVED: "danger",
+};

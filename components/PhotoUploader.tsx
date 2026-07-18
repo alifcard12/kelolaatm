@@ -92,29 +92,52 @@ export function PhotoUploader({
     <div>
       <input type="hidden" name={name} value={JSON.stringify(photos)} />
 
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        disabled={uploading || photos.length >= MAX_PHOTOS}
-        onChange={(e) => handleFiles(e.target.files)}
-        className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm file:mr-3 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-700"
-      />
-      <p className="text-xs text-slate-400 mt-1">Maksimal {MAX_PHOTOS} foto, masing-masing di bawah 5MB.</p>
+      <label
+        className={`flex items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed px-3 py-4 text-sm transition-colors ${
+          uploading || photos.length >= MAX_PHOTOS
+            ? "border-taupe-dark/40 text-espresso-soft/50 cursor-not-allowed"
+            : "border-taupe-dark/60 text-espresso-soft hover:border-rose hover:text-rose cursor-pointer"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
+          <path
+            d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        {uploading ? "Mengunggah…" : "Pilih atau ambil foto"}
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          disabled={uploading || photos.length >= MAX_PHOTOS}
+          onChange={(e) => handleFiles(e.target.files)}
+          className="hidden"
+        />
+      </label>
+      <p className="text-xs text-espresso-soft/70 mt-1.5">
+        Maksimal {MAX_PHOTOS} foto, masing-masing di bawah 5MB.
+      </p>
 
-      {uploading && <p className="text-xs text-slate-500 mt-2">Mengunggah foto...</p>}
-      {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-xs text-danger mt-2">{error}</p>}
 
       {photos.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
           {photos.map((p) => (
             <div key={p.publicId} className="relative group">
-              <img src={p.url} alt="Foto kaset" className="w-16 h-16 object-cover rounded-md border border-slate-200" />
+              <img
+                src={p.url}
+                alt="Foto"
+                className="w-16 h-16 object-cover rounded-xl border border-taupe/70"
+              />
               <button
                 type="button"
                 onClick={() => removePhoto(p.publicId)}
                 title="Hapus foto"
-                className="absolute -top-1.5 -right-1.5 bg-white border border-slate-300 rounded-full w-5 h-5 text-xs leading-none text-red-500"
+                className="absolute -top-1.5 -right-1.5 bg-paper border border-taupe-dark/60 rounded-full w-5 h-5 text-xs leading-none text-danger shadow-sm"
               >
                 ×
               </button>

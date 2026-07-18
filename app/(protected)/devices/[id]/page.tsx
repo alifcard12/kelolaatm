@@ -5,18 +5,17 @@ import { updateDevice, addDeviceLog, deleteDeviceLog, deleteDeviceLogPhoto, dele
 import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
-
-const conditionLabel: Record<string, string> = {
-  GOOD: "Baik",
-  DAMAGED: "Rusak",
-  NEEDS_REPLACEMENT: "Perlu Ganti",
-};
-
-const conditionColor: Record<string, string> = {
-  GOOD: "bg-green-100 text-green-700",
-  DAMAGED: "bg-red-100 text-red-700",
-  NEEDS_REPLACEMENT: "bg-amber-100 text-amber-700",
-};
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card, CardTitle } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { FiChevronLeft } from "react-icons/fi";
+import { ActionForm } from "@/components/ui/ActionForm";
+import { CONDITION_LABEL, CONDITION_TONE } from "@/lib/labels";
 
 export default async function DeviceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -33,151 +32,104 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
 
   const updateDeviceWithId = updateDevice.bind(null, device.id);
   const addDeviceLogWithId = addDeviceLog.bind(null, device.id);
-  const deleteDeviceLogWithId = deleteDeviceLog.bind(null, device.id);
   const deleteDeviceLogPhotoWithId = deleteDeviceLogPhoto.bind(null, device.id);
+
+  async function deleteAndRedirect() {
+    "use server";
+    await deleteDevice(device.id);
+    redirect("/devices");
+  }
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <Link href="/devices" className="text-xs text-slate-400 hover:underline">
-            ← Kembali ke Perangkat
-          </Link>
-          <h2 className="text-2xl font-semibold text-slate-800 mt-1">
-            {device.type} — {device.brand}
-          </h2>
-          <Link href={`/atm/${device.atm.id}`} className="text-xs text-slate-500 hover:underline">
+      <Link href="/devices" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
+        <FiChevronLeft /> Kembali ke Perangkat
+      </Link>
+
+      <PageHeader
+        title={`${device.type} — ${device.brand}`}
+        description={
+          <Link href={`/atm/${device.atm.id}`} className="hover:text-rose transition-colors">
             TID {device.atm.tid} — {device.atm.location} ({device.atm.branch})
           </Link>
-        </div>
-        <form
-          action={async () => {
-            "use server";
-            await deleteDevice(device.id);
-            redirect("/devices");
-          }}
-        >
-          <button className="text-red-500 hover:underline text-xs">Hapus Perangkat</button>
-        </form>
-      </div>
+        }
+        action={<DeleteButton action={deleteAndRedirect} label="Hapus Perangkat" />}
+      />
 
       {/* Edit info perangkat */}
-      <form
-        action={updateDeviceWithId}
-        className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200 mb-8"
-      >
-        <h3 className="text-sm font-semibold text-slate-700">Info Perangkat</h3>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Brand</label>
-          <input
-            name="brand"
-            type="text"
-            required
-            defaultValue={device.brand}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Serial Number</label>
-          <input
-            name="serialNumber"
-            type="text"
-            required
-            defaultValue={device.serialNumber}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Kondisi</label>
-          <select
-            name="condition"
-            required
-            defaultValue={device.condition}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="GOOD">Baik</option>
-            <option value="DAMAGED">Rusak</option>
-            <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Catatan (opsional)</label>
-          <textarea
-            name="note"
-            rows={3}
-            defaultValue={device.note ?? ""}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-        <div className="flex items-center gap-3">
-          <span className={`px-2 py-1 rounded-full text-xs ${conditionColor[device.condition]}`}>
-            {conditionLabel[device.condition]}
-          </span>
-          <span className="text-xs text-slate-400">
-            Last Update: {formatRelativeTime(device.updatedAt)}
-          </span>
-        </div>
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
-        >
-          Simpan Perubahan
-        </button>
-      </form>
+      <Card className="flex flex-col gap-4 mb-8">
+        <CardTitle>Info Perangkat</CardTitle>
+        <ActionForm action={updateDeviceWithId} successMessage="Perangkat berhasil disimpan" className="flex flex-col gap-4">
+          <Field label="Brand" htmlFor="brand">
+            <Input id="brand" name="brand" type="text" required defaultValue={device.brand} />
+          </Field>
+          <Field label="Serial Number" htmlFor="serialNumber">
+            <Input
+              id="serialNumber"
+              name="serialNumber"
+              type="text"
+              required
+              defaultValue={device.serialNumber}
+            />
+          </Field>
+          <Field label="Kondisi" htmlFor="condition">
+            <Select id="condition" name="condition" required defaultValue={device.condition}>
+              <option value="GOOD">Baik</option>
+              <option value="DAMAGED">Rusak</option>
+              <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
+            </Select>
+          </Field>
+          <Field label="Catatan (opsional)" htmlFor="note">
+            <Textarea id="note" name="note" rows={3} defaultValue={device.note ?? ""} />
+          </Field>
+          <div className="flex items-center gap-3">
+            <Badge tone={CONDITION_TONE[device.condition]}>{CONDITION_LABEL[device.condition]}</Badge>
+            <span className="text-xs text-espresso-soft/70">
+              Last Update: {formatRelativeTime(device.updatedAt)}
+            </span>
+          </div>
+          <Button type="submit" className="self-start">
+            Simpan Perubahan
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Tambah riwayat + foto perangkat */}
-      <form
-        action={addDeviceLogWithId}
-        className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200 mb-8"
-      >
-        <h3 className="text-sm font-semibold text-slate-700">Tambah Riwayat / Foto Perangkat</h3>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Catatan (opsional)</label>
-          <textarea
-            name="note"
-            rows={2}
-            placeholder="mis. hasil pengecekan, temuan kerusakan, perbaikan"
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Foto (opsional, bisa lebih dari 1)</label>
-          <PhotoUploader folder="device-logs" />
-        </div>
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
-        >
-          Simpan
-        </button>
-      </form>
+      <Card className="flex flex-col gap-4 mb-8">
+        <CardTitle>Tambah Riwayat / Foto Perangkat</CardTitle>
+        <ActionForm action={addDeviceLogWithId} successMessage="Riwayat berhasil ditambahkan" resetOnSuccess className="flex flex-col gap-4">
+          <Field label="Catatan (opsional)" htmlFor="logNote">
+            <Textarea
+              id="logNote"
+              name="note"
+              rows={2}
+              placeholder="mis. hasil pengecekan, temuan kerusakan, perbaikan"
+            />
+          </Field>
+          <Field label="Foto (opsional, bisa lebih dari 1)">
+            <PhotoUploader folder="device-logs" />
+          </Field>
+          <Button type="submit" className="self-start">
+            Simpan
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Riwayat perangkat */}
-      <h3 className="text-sm font-semibold text-slate-700 mb-3">Riwayat Perangkat</h3>
+      <h3 className="font-display text-sm font-semibold text-espresso mb-3">Riwayat Perangkat</h3>
       <div className="flex flex-col gap-3">
         {device.logs.length === 0 && (
-          <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center text-slate-400 text-sm">
-            Belum ada riwayat untuk perangkat ini.
-          </div>
+          <EmptyState title="Belum ada riwayat" description="Riwayat perangkat ini akan muncul di sini." />
         )}
         {device.logs.map((log) => (
-          <div key={log.id} className="bg-white border border-slate-200 rounded-lg p-4">
+          <Card key={log.id}>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">{formatJakartaDateTime(log.createdAt)}</span>
-              <form
-                action={async () => {
-                  "use server";
-                  await deleteDeviceLogWithId(log.id);
-                }}
-              >
-                <button type="submit" className="text-red-500 hover:underline text-xs">
-                  Hapus Riwayat
-                </button>
-              </form>
+              <span className="text-xs text-espresso-soft/70">{formatJakartaDateTime(log.createdAt)}</span>
+              <DeleteButton action={deleteDeviceLog.bind(null, device.id, log.id)} label="Hapus Riwayat" />
             </div>
-            {log.note && <p className="text-sm text-slate-600 mt-2">{log.note}</p>}
+            {log.note && <p className="text-sm text-espresso-soft mt-2">{log.note}</p>}
             <PhotoLightbox photos={log.photos} onDeletePhoto={deleteDeviceLogPhotoWithId} />
-          </div>
+          </Card>
         ))}
       </div>
     </div>

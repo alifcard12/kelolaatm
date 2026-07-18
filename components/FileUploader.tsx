@@ -110,20 +110,37 @@ export function FileUploader({
     <div>
       <input type="hidden" name={name} value={JSON.stringify(files)} />
 
-      <input
-        type="file"
-        accept="image/*,application/pdf"
-        multiple
-        disabled={uploading || files.length >= MAX_FILES}
-        onChange={(e) => handleFiles(e.target.files)}
-        className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm file:mr-3 file:py-1 file:px-2 file:rounded-md file:border-0 file:bg-slate-100 file:text-slate-700"
-      />
-      <p className="text-xs text-slate-400 mt-1">
+      <label
+        className={`flex items-center justify-center gap-2 w-full rounded-xl border-2 border-dashed px-3 py-4 text-sm transition-colors ${
+          uploading || files.length >= MAX_FILES
+            ? "border-taupe-dark/40 text-espresso-soft/50 cursor-not-allowed"
+            : "border-taupe-dark/60 text-espresso-soft hover:border-rose hover:text-rose cursor-pointer"
+        }`}
+      >
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
+          <path
+            d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        {uploading ? "Mengunggah…" : "Pilih foto atau PDF"}
+        <input
+          type="file"
+          accept="image/*,application/pdf"
+          multiple
+          disabled={uploading || files.length >= MAX_FILES}
+          onChange={(e) => handleFiles(e.target.files)}
+          className="hidden"
+        />
+      </label>
+      <p className="text-xs text-espresso-soft/70 mt-1.5">
         Foto atau PDF, maksimal {MAX_FILES} file, masing-masing di bawah 10MB.
       </p>
 
-      {uploading && <p className="text-xs text-slate-500 mt-2">Mengunggah file...</p>}
-      {error && <p className="text-xs text-red-500 mt-2">{error}</p>}
+      {error && <p className="text-xs text-danger mt-2">{error}</p>}
 
       {files.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
@@ -133,12 +150,12 @@ export function FileUploader({
                 <img
                   src={f.url}
                   alt={f.filename}
-                  className="w-16 h-16 object-cover rounded-md border border-slate-200"
+                  className="w-16 h-16 object-cover rounded-xl border border-taupe/70"
                 />
               ) : (
-                <div className="w-16 h-16 flex flex-col items-center justify-center gap-1 rounded-md border border-slate-200 bg-slate-50 px-1">
-                  <span className="text-[10px] font-semibold text-red-500">PDF</span>
-                  <span className="text-[9px] text-slate-500 truncate w-full text-center">
+                <div className="w-16 h-16 flex flex-col items-center justify-center gap-1 rounded-xl border border-taupe/70 bg-cream px-1">
+                  <span className="text-[10px] font-semibold text-danger">PDF</span>
+                  <span className="text-[9px] text-espresso-soft truncate w-full text-center">
                     {f.filename}
                   </span>
                 </div>
@@ -147,7 +164,7 @@ export function FileUploader({
                 type="button"
                 onClick={() => removeFile(f.publicId)}
                 title="Hapus file"
-                className="absolute -top-1.5 -right-1.5 bg-white border border-slate-300 rounded-full w-5 h-5 text-xs leading-none text-red-500"
+                className="absolute -top-1.5 -right-1.5 bg-paper border border-taupe-dark/60 rounded-full w-5 h-5 text-xs leading-none text-danger shadow-sm"
               >
                 ×
               </button>

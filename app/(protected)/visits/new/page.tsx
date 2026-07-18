@@ -1,6 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { createVisit } from "../actions";
 import VisitTypeFields from "../VisitTypeFields";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Input, Select, Textarea } from "@/components/ui/Input";
+import { Button, LinkButton } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ActionForm } from "@/components/ui/ActionForm";
 
 // Nilai default untuk <input type="datetime-local">, mengikuti waktu Jakarta (WIB, UTC+7)
 function defaultDatetimeLocalValue(date: Date): string {
@@ -13,79 +20,68 @@ export default async function NewVisitPage() {
 
   return (
     <div className="max-w-md">
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">Tambah Jadwal Kunjungan (PM)</h2>
+      <PageHeader title="Tambah Jadwal Kunjungan (PM)" />
 
       {atms.length === 0 ? (
-        <p className="text-slate-500 text-sm">
-          Belum ada data ATM. Tambahkan ATM dulu di menu ATM sebelum mencatat kunjungan.
-        </p>
+        <EmptyState
+          title="Belum ada data ATM"
+          description="Tambahkan ATM dulu sebelum mencatat kunjungan."
+          action={<LinkButton href="/atm/new" size="sm">Tambah ATM</LinkButton>}
+        />
       ) : (
-        <form
-          action={createVisit}
-          className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200"
-        >
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">ATM</label>
-            <select
-              name="atmId"
-              required
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
+        <Card>
+          <ActionForm action={createVisit} successMessage="Kunjungan berhasil dicatat" className="flex flex-col gap-4">
+            <Field
+              label="ATM"
+              htmlFor="atmId"
+              hint="Lokasi, kanca, TID, dan SSB otomatis diambil dari data ATM ini."
             >
-              {atms.map((atm) => (
-                <option key={atm.id} value={atm.id}>
-                  {atm.tid} — {atm.location} ({atm.branch})
+              <Select id="atmId" name="atmId" required defaultValue="">
+                <option value="" disabled>
+                  Pilih ATM
                 </option>
-              ))}
-            </select>
-            <p className="text-xs text-slate-400 mt-1">
-              Lokasi, kanca, TID, dan SSB otomatis diambil dari data ATM ini.
-            </p>
-          </div>
+                {atms.map((atm) => (
+                  <option key={atm.id} value={atm.id}>
+                    {atm.tid} — {atm.location} ({atm.branch})
+                  </option>
+                ))}
+              </Select>
+            </Field>
 
-          <VisitTypeFields />
+            <VisitTypeFields />
 
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">Tanggal &amp; Waktu Kunjungan</label>
-            <input
-              name="visitDate"
-              type="datetime-local"
-              required
-              defaultValue={defaultDatetimeLocalValue(new Date())}
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
+            <Field label="Tanggal & Waktu Kunjungan" htmlFor="visitDate">
+              <Input
+                id="visitDate"
+                name="visitDate"
+                type="datetime-local"
+                required
+                defaultValue={defaultDatetimeLocalValue(new Date())}
+              />
+            </Field>
 
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">Keterangan (opsional)</label>
-            <textarea
-              name="keterangan"
-              rows={3}
-              placeholder="mis. Cek fisik mesin, bersih-bersih kaset, cek grounding"
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
+            <Field label="Keterangan (opsional)" htmlFor="keterangan">
+              <Textarea
+                id="keterangan"
+                name="keterangan"
+                rows={3}
+                placeholder="mis. Cek fisik mesin, bersih-bersih kaset, cek grounding"
+              />
+            </Field>
 
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">URL Foto (opsional)</label>
-            <input
-              name="photoUrl"
-              type="url"
-              placeholder="https://..."
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-            />
-            <p className="text-xs text-slate-400 mt-1">
-              Sementara tempel link foto (mis. dari Cloudinary/Google Drive). Upload langsung bisa
-              menyusul.
-            </p>
-          </div>
+            <Field
+              label="URL Foto (opsional)"
+              htmlFor="photoUrl"
+              hint="Sementara tempel link foto (mis. dari Cloudinary/Google Drive). Upload langsung bisa menyusul."
+            >
+              <Input id="photoUrl" name="photoUrl" type="url" placeholder="https://..." />
+            </Field>
 
-          <button
-            type="submit"
-            className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 mt-2"
-          >
-            Simpan Kunjungan
-          </button>
-        </form>
+            <Button type="submit" className="mt-2 self-start">
+              Simpan Kunjungan
+            </Button>
+          </ActionForm>
+        </Card>
       )}
     </div>
   );

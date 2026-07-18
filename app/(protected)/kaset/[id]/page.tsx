@@ -1,26 +1,21 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { formatJakartaDateTime } from "@/lib/date";
 import { addKasetLog, deleteKaset, deleteKasetLog, deleteKasetLogPhoto, updateKasetType } from "../actions";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
-
-const conditionLabel: Record<string, string> = {
-  GOOD: "Baik",
-  DAMAGED: "Rusak",
-  NEEDS_REPLACEMENT: "Perlu Ganti",
-};
-
-const typeLabel: Record<string, string> = {
-  ALL_IN: "All in One",
-  CURRENCY: "Currency",
-};
-
-const conditionColor: Record<string, string> = {
-  GOOD: "bg-green-100 text-green-700",
-  DAMAGED: "bg-red-100 text-red-700",
-  NEEDS_REPLACEMENT: "bg-amber-100 text-amber-700",
-};
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Card, CardTitle } from "@/components/ui/Card";
+import { Field } from "@/components/ui/Field";
+import { Select, Textarea } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { DeleteButton } from "@/components/ui/DeleteButton";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { FiChevronLeft } from "react-icons/fi";
+import { ActionForm } from "@/components/ui/ActionForm";
+import { CONDITION_LABEL, CONDITION_TONE, KASET_TYPE_LABEL } from "@/lib/labels";
 
 export default async function KasetDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -34,110 +29,75 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
 
   const addLogWithId = addKasetLog.bind(null, kaset.id);
   const updateTypeWithId = updateKasetType.bind(null, kaset.id);
+  const deleteKasetLogPhotoWithId = deleteKasetLogPhoto.bind(null, kaset.id);
 
   return (
     <div className="max-w-2xl">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-semibold text-slate-800">Kaset {kaset.serialNumber}</h2>
-        <form
-          action={async () => {
-            "use server";
-            await deleteKaset(kaset.id);
-          }}
-        >
-          <button className="text-red-500 hover:underline text-xs">Hapus Kaset</button>
-        </form>
-      </div>
+      <Link href="/kaset" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
+        <FiChevronLeft /> Kembali ke Kaset
+      </Link>
+
+      <PageHeader
+        title={`Kaset ${kaset.serialNumber}`}
+        action={<DeleteButton action={deleteKaset.bind(null, kaset.id)} label="Hapus Kaset" />}
+      />
 
       {/* Tipe kaset */}
-      <form
-        action={updateTypeWithId}
-        className="flex items-center gap-3 bg-white p-4 rounded-lg border border-slate-200 mb-6"
-      >
-        <span className="text-sm text-slate-600">Tipe:</span>
-        <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded-full">
-          {typeLabel[kaset.type]}
-        </span>
-        <select
-          name="type"
-          defaultValue={kaset.type}
-          className="border border-slate-300 rounded-md px-2 py-1.5 text-sm ml-auto"
-        >
-          <option value="ALL_IN">All in One</option>
-          <option value="CURRENCY">Currency</option>
-        </select>
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-xs px-3 py-1.5 rounded-md hover:bg-slate-700"
-        >
-          Ubah Tipe
-        </button>
-      </form>
+      <Card className="flex flex-wrap items-center gap-3 mb-6">
+        <span className="text-sm text-espresso-soft">Tipe saat ini:</span>
+        <Badge tone="neutral">{KASET_TYPE_LABEL[kaset.type]}</Badge>
+        <ActionForm action={updateTypeWithId} successMessage="Tipe kaset berhasil diubah" className="flex items-center gap-2 ml-auto">
+          <Select name="type" defaultValue={kaset.type} className="w-auto">
+            <option value="ALL_IN">All in One</option>
+            <option value="CURRENCY">Currency</option>
+          </Select>
+          <Button type="submit" size="sm" variant="dark">
+            Ubah Tipe
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Form tambah update kondisi baru */}
-      <form
-        action={addLogWithId}
-        className="flex flex-col gap-4 bg-white p-6 rounded-lg border border-slate-200 mb-8"
-      >
-        <h3 className="text-sm font-semibold text-slate-700">Tambah Update Kondisi</h3>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Kondisi</label>
-          <select
-            name="condition"
-            required
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="GOOD">Baik</option>
-            <option value="DAMAGED">Rusak</option>
-            <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Problem (opsional)</label>
-          <textarea
-            name="problem"
-            rows={2}
-            className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-slate-600 mb-1">Foto (opsional, bisa lebih dari 1)</label>
-          <PhotoUploader />
-        </div>
-        <button
-          type="submit"
-          className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 self-start"
-        >
-          Simpan Update
-        </button>
-      </form>
+      <Card className="flex flex-col gap-4 mb-8">
+        <CardTitle>Tambah Update Kondisi</CardTitle>
+        <ActionForm action={addLogWithId} successMessage="Update kondisi berhasil ditambahkan" resetOnSuccess className="flex flex-col gap-4">
+          <Field label="Kondisi" htmlFor="condition">
+            <Select id="condition" name="condition" required defaultValue="GOOD">
+              <option value="GOOD">Baik</option>
+              <option value="DAMAGED">Rusak</option>
+              <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
+            </Select>
+          </Field>
+          <Field label="Problem (opsional)" htmlFor="problem">
+            <Textarea id="problem" name="problem" rows={2} />
+          </Field>
+          <Field label="Foto (opsional, bisa lebih dari 1)">
+            <PhotoUploader />
+          </Field>
+          <Button type="submit" className="self-start">
+            Simpan Update
+          </Button>
+        </ActionForm>
+      </Card>
 
       {/* Riwayat */}
-      <h3 className="text-sm font-semibold text-slate-700 mb-3">Riwayat</h3>
+      <h3 className="font-display text-sm font-semibold text-espresso mb-3">Riwayat</h3>
       <div className="flex flex-col gap-3">
+        {kaset.logs.length === 0 && (
+          <EmptyState title="Belum ada riwayat" description="Riwayat kondisi kaset akan muncul di sini." />
+        )}
         {kaset.logs.map((log) => (
-          <div key={log.id} className="bg-white border border-slate-200 rounded-lg p-4">
+          <Card key={log.id}>
             <div className="flex items-center justify-between">
-              <span className={`px-2 py-1 rounded-full text-xs ${conditionColor[log.condition]}`}>
-                {conditionLabel[log.condition]}
-              </span>
+              <Badge tone={CONDITION_TONE[log.condition]}>{CONDITION_LABEL[log.condition]}</Badge>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">{formatJakartaDateTime(log.createdAt)}</span>
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteKasetLog(kaset.id, log.id);
-                  }}
-                >
-                  <button type="submit" className="text-red-500 hover:underline text-xs">
-                    Hapus Riwayat
-                  </button>
-                </form>
+                <span className="text-xs text-espresso-soft/70">{formatJakartaDateTime(log.createdAt)}</span>
+                <DeleteButton action={deleteKasetLog.bind(null, kaset.id, log.id)} label="Hapus Riwayat" />
               </div>
             </div>
-            {log.problem && <p className="text-sm text-slate-600 mt-2">{log.problem}</p>}
-            <PhotoLightbox photos={log.photos} onDeletePhoto={deleteKasetLogPhoto.bind(null, kaset.id)} />
-          </div>
+            {log.problem && <p className="text-sm text-espresso-soft mt-2">{log.problem}</p>}
+            <PhotoLightbox photos={log.photos} onDeletePhoto={deleteKasetLogPhotoWithId} />
+          </Card>
         ))}
       </div>
     </div>

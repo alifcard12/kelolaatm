@@ -1,4 +1,9 @@
 import { login } from "./actions";
+import { BrandMark } from "@/components/brand-mark";
+import { Field } from "@/components/ui/Field";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Alert } from "@/components/ui/Alert";
 
 export default async function LoginPage({
   searchParams,
@@ -8,34 +13,27 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <div className="w-full max-w-sm bg-white p-8 rounded-lg border border-slate-200">
-        <h1 className="text-xl font-semibold text-slate-800 mb-1">Kelola ATM</h1>
-        <p className="text-sm text-slate-500 mb-6">Masukkan password untuk masuk.</p>
+    <div className="min-h-screen flex items-center justify-center bg-cream px-4 py-10">
+      <div className="w-full max-w-sm">
+        <div className="flex flex-col items-center text-center mb-6">
+          <BrandMark className="h-14 w-14 mb-4" />
+          <h1 className="font-display text-2xl font-semibold text-espresso">Kelola ATM</h1>
+          <p className="text-sm text-espresso-soft mt-1">Masukkan password untuk masuk.</p>
+        </div>
 
-        <form action={login} className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm text-slate-600 mb-1">Password</label>
-            <input
-              name="password"
-              type="password"
-              required
-              autoFocus
-              className="w-full border border-slate-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
+        <div className="bg-paper p-6 md:p-7 rounded-2xl border border-taupe/70 shadow-[var(--shadow-card)]">
+          <form action={login} className="flex flex-col gap-4">
+            <Field label="Password" htmlFor="password">
+              <Input id="password" name="password" type="password" required autoFocus />
+            </Field>
 
-          {error && (
-            <p className="text-sm text-red-600">Password salah, coba lagi.</p>
-          )}
+            {error && <Alert variant="danger" title="Password salah, coba lagi." />}
 
-          <button
-            type="submit"
-            className="bg-slate-900 text-white text-sm px-4 py-2 rounded-md hover:bg-slate-700 mt-2"
-          >
-            Masuk
-          </button>
-        </form>
+            <Button type="submit" className="mt-1 w-full">
+              Masuk
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
