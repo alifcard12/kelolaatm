@@ -74,6 +74,16 @@ export function formatJakartaDate(date: Date): string {
   }).format(date);
 }
 
+// "13 Juli 2026" — nama bulan lengkap, dipakai di dokumen cetak/invoice.
+export function formatJakartaDateLong(date: Date): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    timeZone: JAKARTA_TZ,
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
+
 // Format "15-07-2026" — dipakai di teks tiket OPEN/CLOSE yang di-copy
 export function formatJakartaDateDMY(date: Date): string {
   const parts = new Intl.DateTimeFormat("en-GB", {
