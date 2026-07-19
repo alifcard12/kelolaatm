@@ -40,8 +40,8 @@ export const TICKET_STATUS_TONE: Record<string, BadgeTone> = {
 };
 
 export const VISIT_TYPE_LABEL: Record<string, string> = {
-  PM: "PM — Preventive",
-  CM: "CM — Corrective",
+  PM: "PM",
+  CM: "CM",
 };
 
 export const VISIT_TYPE_TONE: Record<string, BadgeTone> = {

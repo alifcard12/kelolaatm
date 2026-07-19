@@ -9,7 +9,11 @@ import {
   deleteAtm,
 } from "../actions";
 import { deleteDevice, replaceDevice } from "../../devices/actions";
-import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
+import {
+  formatJakartaDateTime,
+  formatJakartaDate,
+  formatRelativeTime,
+} from "@/lib/date";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
 import CopyTextButton from "@/components/CopyTextButton";
@@ -21,7 +25,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FiChevronLeft, FiPlus } from "react-icons/fi";
+import { FiChevronLeft, FiClock, FiPlus, FiSave } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import {
   CONDITION_LABEL,
@@ -76,29 +80,29 @@ export default async function AtmDetailPage({
       />
 
       {/* Edit info ATM */}
-      <Card className="flex flex-col gap-4 mb-8">
+      <Card className="flex flex-col gap-4 mb-4">
         <CardTitle>Info ATM</CardTitle>
 
         <div className="flex flex-wrap gap-2 -mt-1">
           <CopyTextButton
             text={String(atm.tid)}
             label={`Copy TID`}
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
+            className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.location}
             label="Copy Lokasi"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
+            className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.branch}
             label="Copy Branch"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
+            className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.ssb}
             label="Copy SSB"
-            className="bg-cream text-espresso-soft text-xs font-medium px-3 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
+            className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
         </div>
 
@@ -135,7 +139,8 @@ export default async function AtmDetailPage({
             />
           </Field>
           <Button type="submit" className="self-start">
-            Simpan Perubahan
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>
@@ -166,10 +171,7 @@ export default async function AtmDetailPage({
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <span className="text-sm font-medium text-espresso">
-                    {d.type} — {d.brand}
-                  </span>
-                  <span className="text-xs text-espresso-soft/70 ml-2">
-                    SN {d.serialNumber}
+                    {d.type} - {d.brand}
                   </span>
                 </div>
                 <Badge tone={CONDITION_TONE[d.condition]}>
@@ -179,8 +181,13 @@ export default async function AtmDetailPage({
               {d.note && (
                 <p className="text-sm text-espresso-soft mt-2">{d.note}</p>
               )}
-              <div className="text-xs text-espresso-soft/70 mt-2">
-                Last Update: {formatRelativeTime(d.updatedAt)}
+              <div className="text-xs text-espresso-soft/70 mt-2 flex items-center justify-between">
+                <span className="text-xs text-espresso-soft/70 ">
+                  {d.serialNumber}
+                </span>
+                <div className="flex gap-1 items-center ">
+                  <FiClock /> {formatRelativeTime(d.updatedAt)}
+                </div>
               </div>
 
               <div className="flex items-center gap-4 mt-3 pt-3 border-t border-taupe/60">
@@ -319,33 +326,35 @@ export default async function AtmDetailPage({
           />
         )}
         {atm.visits.map((v) => (
-          <Card
-            key={v.id}
-            padded={false}
-            className="p-3.5 flex items-center justify-between gap-3"
-          >
-            <div className="min-w-0">
-              <Badge tone={VISIT_TYPE_TONE[v.visitType]}>
-                {VISIT_TYPE_LABEL[v.visitType]}
-              </Badge>
-              <span className="text-sm text-espresso ml-2">
-                {v.visitType === "PM"
-                  ? v.ticketNumber
-                    ? `No. Tiket: ${v.ticketNumber}`
-                    : "Tanpa nomor tiket"
-                  : v.ticket
-                    ? `No. Tiket: ${v.ticket.ticketNumber ?? "(belum ada nomor)"} — ${v.ticket.problem}`
-                    : "Tiket tidak ditemukan"}
-              </span>
-              {v.keterangan && (
-                <div className="text-xs text-espresso-soft/70 mt-1">
-                  {v.keterangan}
-                </div>
-              )}
+          <Card key={v.id} padded={false} className="p-3.5  gap-3">
+            <div>
+              <div className="min-w-0">
+                <Badge tone={VISIT_TYPE_TONE[v.visitType]}>
+                  {VISIT_TYPE_LABEL[v.visitType]}
+                </Badge>
+                <span className="text-xs text-espresso ml-2">
+                  {v.visitType === "PM"
+                    ? v.ticketNumber
+                      ? `No. Tiket: ${v.ticketNumber}`
+                      : "Tanpa nomor tiket"
+                    : v.ticket
+                      ? `No. Tiket: ${v.ticket.ticketNumber ?? "(belum ada nomor)"} - ${v.ticket.problem}`
+                      : "Tiket tidak ditemukan"}
+                </span>
+
+                {v.keterangan && (
+                  <div className="text-xs text-espresso-soft/70 mt-1 ">
+                    {v.keterangan}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-end gap-1 mt-1">
+                <FiClock />
+                <p className="text-xs text-espresso-soft/70  ">
+                  {formatJakartaDate(v.visitDate)}
+                </p>
+              </div>
             </div>
-            <span className="text-xs text-espresso-soft/70 whitespace-nowrap">
-              {formatJakartaDateTime(v.visitDate)}
-            </span>
           </Card>
         ))}
       </div>
@@ -371,6 +380,7 @@ export default async function AtmDetailPage({
             <PhotoUploader folder="atm-logs" />
           </Field>
           <Button type="submit" className="self-start">
+            <FiSave />
             Simpan
           </Button>
         </ActionForm>

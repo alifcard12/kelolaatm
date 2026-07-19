@@ -1,17 +1,32 @@
-import type { InputHTMLAttributes, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
+import type {
+  InputHTMLAttributes,
+  SelectHTMLAttributes,
+  TextareaHTMLAttributes,
+} from "react";
 
 const CONTROL_BASE =
-  "w-full rounded-xl border border-taupe-dark/60 bg-paper px-3.5 py-2.5 text-sm text-espresso placeholder:text-espresso-soft/50 transition-colors focus:border-rose disabled:bg-cream disabled:text-espresso-soft/60";
+  "w-full rounded-xl border border-taupe-dark/60 bg-paper px-3.5 py-2 text-xs text-espresso placeholder:text-espresso-soft/50 transition-colors focus:border-rose disabled:bg-cream disabled:text-espresso-soft/60";
 
-export function Input({ className = "", ...props }: InputHTMLAttributes<HTMLInputElement>) {
+export function Input({
+  className = "",
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={`${CONTROL_BASE} ${className}`} {...props} />;
 }
 
-export function Textarea({ className = "", ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={`${CONTROL_BASE} resize-y ${className}`} {...props} />;
+export function Textarea({
+  className = "",
+  ...props
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea className={`${CONTROL_BASE} resize-y ${className}`} {...props} />
+  );
 }
 
-export function Select({ className = "", ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
+export function Select({
+  className = "",
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <div className="relative">
       <select

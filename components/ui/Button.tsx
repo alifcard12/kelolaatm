@@ -1,7 +1,13 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "dark" | "warning";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "danger"
+  | "dark"
+  | "warning";
 export type ButtonSize = "sm" | "md";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
@@ -10,8 +16,10 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   dark: "bg-espresso text-paper hover:bg-espresso/90 active:bg-espresso/90",
   secondary:
     "bg-paper text-espresso border border-taupe-dark/70 hover:bg-cream active:bg-cream",
-  ghost: "bg-transparent text-espresso-soft hover:bg-taupe/40 active:bg-taupe/50",
-  danger: "bg-danger text-paper hover:bg-danger/90 active:bg-danger/90 shadow-sm shadow-danger/20",
+  ghost:
+    "bg-transparent text-espresso-soft hover:bg-taupe/40 active:bg-taupe/50",
+  danger:
+    "bg-danger text-paper hover:bg-danger/90 active:bg-danger/90 shadow-sm shadow-danger/20",
   warning: "bg-warning text-paper hover:bg-warning/90 active:bg-warning/90",
 };
 
@@ -33,7 +41,10 @@ export function Button({
   size = "md",
   className = "",
   ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: ButtonSize }) {
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+}) {
   return <button className={classes(variant, size, className)} {...props} />;
 }
 
@@ -49,5 +60,11 @@ export function LinkButton({
   variant?: ButtonVariant;
   size?: ButtonSize;
 }) {
-  return <Link href={href} className={classes(variant, size, className)} {...props} />;
+  return (
+    <Link
+      href={href}
+      className={classes(variant, size, className)}
+      {...props}
+    />
+  );
 }
