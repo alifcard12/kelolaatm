@@ -20,7 +20,7 @@ import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiChevronLeft, FiSave } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { TICKET_STATUS_LABEL, TICKET_STATUS_TONE } from "@/lib/labels";
 
@@ -28,7 +28,11 @@ function deviceLabel(d: { type: string; brand: string; serialNumber: string }) {
   return `${d.type} — ${d.brand} — SN ${d.serialNumber}`;
 }
 
-export default async function TicketDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TicketDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const ticket = await prisma.ticket.findUnique({
@@ -77,7 +81,10 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-2xl">
-      <Link href="/tickets" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
+      <Link
+        href="/tickets"
+        className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
+      >
         <FiChevronLeft /> Kembali ke Tiket
       </Link>
 
@@ -86,20 +93,22 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
         description={`${ticket.atm.branch} · SSB: ${ticket.atm.ssb}`}
         action={
           <div className="flex items-center gap-3">
-            <Badge tone={TICKET_STATUS_TONE[ticket.status]}>{TICKET_STATUS_LABEL[ticket.status]}</Badge>
+            <Badge tone={TICKET_STATUS_TONE[ticket.status]}>
+              {TICKET_STATUS_LABEL[ticket.status]}
+            </Badge>
             <DeleteButton action={deleteAndRedirect} label="Hapus Tiket" />
           </div>
         }
       />
 
-      <div className="text-xs text-espresso-soft/70 mb-6">
+      <div className="text-xs text-espresso-soft/70 mb-2">
         Dibuka: {formatJakartaDateTime(ticket.openedAt)}
         {ticket.status === "CLOSED" && ticket.closedAt && (
           <> · Ditutup: {formatJakartaDateTime(ticket.closedAt)}</>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2 mb-6">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <CopyTextButton text={openText} label="Copy Teks Open" />
         {ticket.status === "CLOSED" && (
           <CopyTextButton
@@ -109,7 +118,10 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           />
         )}
         {ticket.status === "CLOSED" && (
-          <ActionForm action={reopenTicket.bind(null, ticket.id)} successMessage="Tiket dibuka kembali">
+          <ActionForm
+            action={reopenTicket.bind(null, ticket.id)}
+            successMessage="Tiket dibuka kembali"
+          >
             <button className="text-espresso-soft hover:text-rose text-xs px-2 transition-colors">
               Buka Kembali
             </button>
@@ -120,13 +132,27 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
       {/* Edit problem & device rujukan */}
       <Card className="flex flex-col gap-4 mb-6">
         <CardTitle>Edit Tiket</CardTitle>
-        <ActionForm action={updateTicketWithId} successMessage="Tiket berhasil diperbarui" className="flex flex-col gap-4">
+        <ActionForm
+          action={updateTicketWithId}
+          successMessage="Tiket berhasil diperbarui"
+          className="flex flex-col gap-4"
+        >
           <Field label="Problem" htmlFor="problem">
-            <Textarea id="problem" name="problem" rows={3} required defaultValue={ticket.problem} />
+            <Textarea
+              id="problem"
+              name="problem"
+              rows={3}
+              required
+              defaultValue={ticket.problem}
+            />
           </Field>
 
           <Field label="Device Rujukan (opsional)" htmlFor="deviceId">
-            <Select id="deviceId" name="deviceId" defaultValue={ticket.deviceId ?? ""}>
+            <Select
+              id="deviceId"
+              name="deviceId"
+              defaultValue={ticket.deviceId ?? ""}
+            >
               <option value="">Tidak ada</option>
               {ticket.atm.devices.map((d) => (
                 <option key={d.id} value={d.id}>
@@ -142,6 +168,7 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           </Field>
 
           <Button type="submit" className="self-start">
+            <FiSave />
             Simpan Perubahan
           </Button>
         </ActionForm>
@@ -149,10 +176,16 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
 
       {/* Tutup / edit detail penutupan tiket */}
       <Card className="flex flex-col gap-4 mb-6">
-        <CardTitle>{ticket.status === "OPEN" ? "Tutup Tiket" : "Edit Detail Penutupan"}</CardTitle>
+        <CardTitle>
+          {ticket.status === "OPEN" ? "Tutup Tiket" : "Edit Detail Penutupan"}
+        </CardTitle>
         <ActionForm
           action={closeTicketWithId}
-          successMessage={ticket.status === "OPEN" ? "Tiket berhasil ditutup" : "Perubahan berhasil disimpan"}
+          successMessage={
+            ticket.status === "OPEN"
+              ? "Tiket berhasil ditutup"
+              : "Perubahan berhasil disimpan"
+          }
           resetOnSuccess={false}
           className="flex flex-col gap-4"
         >
@@ -179,7 +212,11 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
           </Field>
 
           <Field label="Device Rujukan (opsional)" htmlFor="deviceId2">
-            <Select id="deviceId2" name="deviceId" defaultValue={ticket.deviceId ?? ""}>
+            <Select
+              id="deviceId2"
+              name="deviceId"
+              defaultValue={ticket.deviceId ?? ""}
+            >
               <option value="">Tidak ada</option>
               {ticket.atm.devices.map((d) => (
                 <option key={d.id} value={d.id}>
@@ -203,7 +240,10 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ i
       {ticket.attachments.length > 0 && (
         <Card>
           <CardTitle className="mb-1">Lampiran</CardTitle>
-          <TicketAttachments attachments={ticket.attachments} onDelete={deleteAttachmentWithId} />
+          <TicketAttachments
+            attachments={ticket.attachments}
+            onDelete={deleteAttachmentWithId}
+          />
         </Card>
       )}
     </div>
