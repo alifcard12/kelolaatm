@@ -8,31 +8,40 @@ import { BrandMark } from "@/components/brand-mark";
 import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
 
 const navItems = [
-  { href: "/atm", label: "ATM" },
-  { href: "/devices", label: "Perangkat" },
-  { href: "/kaset", label: "Kaset" },
-  { href: "/tickets", label: "Ticket" },
-  { href: "/notes", label: "Catatan" },
-  { href: "/travel", label: "Travel" },
-  { href: "/hotel", label: "Hotel" },
-  { href: "/product", label: "Product" },
-  { href: "/finance", label: "Keuangan" },
-  { href: "/visits", label: "Jadwal Kunjungan" },
+  { href: "/atm", label: "ATM", description: "Data Unit ATM" },
+  { href: "/devices", label: "Perangkat", description: "Perangkat Pendukung" },
+  { href: "/kaset", label: "Kaset", description: "Kaset ATM" },
+  { href: "/tickets", label: "Ticket", description: "Tiket Servis" },
+  { href: "/notes", label: "Catatan", description: "Catatan Tim" },
+  { href: "/travel", label: "Travel", description: "Pemesanan Travel" },
+  { href: "/hotel", label: "Hotel", description: "Pemesanan Hotel" },
+  { href: "/product", label: "Product", description: "Data Master Product" },
+  { href: "/finance", label: "Keuangan", description: "Keuangan Operasional" },
+  { href: "/visits", label: "Jadwal Kunjungan", description: "Jadwal Kunjungan" },
 ];
+
+const DEFAULT_BRAND = { label: "Kelola ATM", description: "Operasional & Servis" };
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function Brand() {
+function getBrandText(pathname: string) {
+  const active = navItems.find((item) => isActive(pathname, item.href));
+  if (!active) return DEFAULT_BRAND;
+  return { label: active.label, description: active.description };
+}
+
+function Brand({ pathname }: { pathname: string }) {
+  const { label, description } = getBrandText(pathname);
   return (
     <Link href="/" className="flex items-center gap-3 px-2">
       <BrandMark className="h-9 w-9 shrink-0" />
       <div className="leading-tight">
         <p className="font-display text-base font-semibold text-espresso">
-          Kelola ATM
+          {label}
         </p>
-        <p className="text-[11px] text-espresso-soft">Operasional & Servis</p>
+        <p className="text-[11px] text-espresso-soft">{description}</p>
       </div>
     </Link>
   );
@@ -104,7 +113,7 @@ export default function Sidebar() {
     <>
       {/* --- Top bar mobile (< md) --- */}
       <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-taupe/70 bg-cream/90 backdrop-blur px-4 py-3">
-        <Brand />
+        <Brand pathname={pathname} />
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -136,7 +145,7 @@ export default function Sidebar() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <Brand />
+            <Brand pathname={pathname} />
             <button
               type="button"
               onClick={() => setOpen(false)}
@@ -155,7 +164,7 @@ export default function Sidebar() {
 
       {/* --- Sidebar desktop (≥ md) --- */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col gap-8 border-r border-taupe/70 bg-cream sticky top-0 h-screen p-5">
-        <Brand />
+        <Brand pathname={pathname} />
         <NavLinks pathname={pathname} />
         <div className="mt-auto border-t border-taupe/70 pt-3">
           <LogoutForm />

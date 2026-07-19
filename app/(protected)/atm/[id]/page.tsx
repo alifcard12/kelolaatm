@@ -25,7 +25,14 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FiArrowLeft, FiClock, FiPlus, FiSave, FiTrash } from "react-icons/fi";
+import {
+  FiArrowLeft,
+  FiClock,
+  FiCopy,
+  FiPlus,
+  FiSave,
+  FiTrash,
+} from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import {
   CONDITION_LABEL,
@@ -95,22 +102,38 @@ export default async function AtmDetailPage({
         <div className="flex flex-wrap gap-2 -mt-1">
           <CopyTextButton
             text={String(atm.tid)}
-            label={`Copy TID`}
+            label={
+              <span className="flex items-center gap-2">
+                <FiCopy /> TID
+              </span>
+            }
             className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.location}
-            label="Copy Lokasi"
+            label={
+              <span className="flex items-center gap-2">
+                <FiCopy /> Lokasi
+              </span>
+            }
             className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.branch}
-            label="Copy Branch"
+            label={
+              <span className="flex items-center gap-2">
+                <FiCopy /> Branch
+              </span>
+            }
             className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
           <CopyTextButton
             text={atm.ssb}
-            label="Copy SSB"
+            label={
+              <span className="flex items-center gap-2">
+                <FiCopy /> SSB
+              </span>
+            }
             className="bg-cream text-espresso-soft text-xs font-medium px-2 py-1.5 rounded-lg border border-taupe/70 hover:border-rose/50 hover:text-rose transition-colors"
           />
         </div>
