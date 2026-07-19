@@ -9,7 +9,7 @@ import {
 import { PageHeader } from "@/components/ui/PageHeader";
 import { LinkButton } from "@/components/ui/Button";
 import { Card, CardTitle } from "@/components/ui/Card";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiDownload } from "react-icons/fi";
 import { FinanceListClient } from "./FinanceListClient";
 import { FinanceStatCards } from "./FinanceStatCards";
 
@@ -87,9 +87,17 @@ export default async function FinancePage({
         title=""
         description=""
         action={
-          <LinkButton href="/finance/new">
-            <FiPlus /> Tambah
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <a
+              href={`/finance/export?month=${month}`}
+              className="inline-flex items-center justify-center rounded-xl font-semibold transition-colors duration-150 text-sm px-4 py-2.5 gap-2 bg-paper text-espresso border border-taupe-dark/70 hover:bg-cream active:bg-cream"
+            >
+              <FiDownload /> Export Excel
+            </a>
+            <LinkButton href="/finance/new">
+              <FiPlus /> Tambah
+            </LinkButton>
+          </div>
         }
       />
 
