@@ -8,14 +8,14 @@ import { PhotoLightbox } from "@/components/PhotoLightbox";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
-import { Select, Textarea } from "@/components/ui/Input";
+import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { FiChevronLeft } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
-import { CONDITION_LABEL, CONDITION_TONE, KASET_TYPE_LABEL } from "@/lib/labels";
+import { KASET_CONDITION_LABEL, KASET_CONDITION_TONE, KASET_TYPE_LABEL, GANTI_PART_LABEL } from "@/lib/labels";
 
 export default async function KasetDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -63,13 +63,27 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
         <ActionForm action={addLogWithId} successMessage="Update kondisi berhasil ditambahkan" resetOnSuccess className="flex flex-col gap-4">
           <Field label="Kondisi" htmlFor="condition">
             <Select id="condition" name="condition" required defaultValue="GOOD">
-              <option value="GOOD">Baik</option>
-              <option value="DAMAGED">Rusak</option>
-              <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
+              <option value="GOOD">Good</option>
+              <option value="BAD">Bad</option>
+              <option value="BROKEN">Broken</option>
+              <option value="SCRAP">Scrap</option>
             </Select>
           </Field>
           <Field label="Problem (opsional)" htmlFor="problem">
             <Textarea id="problem" name="problem" rows={2} />
+          </Field>
+          <Field label="Action (opsional)" htmlFor="action">
+            <Input id="action" name="action" type="text" />
+          </Field>
+          <Field label="Notes (opsional)" htmlFor="notes">
+            <Textarea id="notes" name="notes" rows={2} />
+          </Field>
+          <Field label="Ganti Part (opsional)" htmlFor="gantiPart">
+            <Select id="gantiPart" name="gantiPart" defaultValue="">
+              <option value="">Tidak ada</option>
+              <option value="STOCK">Stock</option>
+              <option value="SCRAP">Scrap</option>
+            </Select>
           </Field>
           <Field label="Foto (opsional, bisa lebih dari 1)">
             <PhotoUploader />
@@ -89,13 +103,33 @@ export default async function KasetDetailPage({ params }: { params: Promise<{ id
         {kaset.logs.map((log) => (
           <Card key={log.id}>
             <div className="flex items-center justify-between">
-              <Badge tone={CONDITION_TONE[log.condition]}>{CONDITION_LABEL[log.condition]}</Badge>
+              <Badge tone={KASET_CONDITION_TONE[log.condition]}>
+                {KASET_CONDITION_LABEL[log.condition]}
+              </Badge>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-espresso-soft/70">{formatJakartaDateTime(log.createdAt)}</span>
                 <DeleteButton action={deleteKasetLog.bind(null, kaset.id, log.id)} label="Hapus Riwayat" />
               </div>
             </div>
             {log.problem && <p className="text-sm text-espresso-soft mt-2">{log.problem}</p>}
+            {log.action && (
+              <p className="text-sm text-espresso mt-2">
+                <span className="text-espresso-soft/70">Action: </span>
+                {log.action}
+              </p>
+            )}
+            {log.notes && (
+              <p className="text-sm text-espresso mt-1">
+                <span className="text-espresso-soft/70">Notes: </span>
+                {log.notes}
+              </p>
+            )}
+            {log.gantiPart && (
+              <p className="text-sm text-espresso mt-1">
+                <span className="text-espresso-soft/70">Ganti Part: </span>
+                {GANTI_PART_LABEL[log.gantiPart]}
+              </p>
+            )}
             <PhotoLightbox photos={log.photos} onDeletePhoto={deleteKasetLogPhotoWithId} />
           </Card>
         ))}

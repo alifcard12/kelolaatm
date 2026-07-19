@@ -27,14 +27,31 @@ export default function NewKasetPage() {
 
           <Field label="Kondisi Awal" htmlFor="condition">
             <Select id="condition" name="condition" required defaultValue="GOOD">
-              <option value="GOOD">Baik</option>
-              <option value="DAMAGED">Rusak</option>
-              <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
+              <option value="GOOD">Good</option>
+              <option value="BAD">Bad</option>
+              <option value="BROKEN">Broken</option>
+              <option value="SCRAP">Scrap</option>
             </Select>
           </Field>
 
           <Field label="Problem (opsional)" htmlFor="problem">
             <Textarea id="problem" name="problem" rows={3} />
+          </Field>
+
+          <Field label="Action (opsional)" htmlFor="action">
+            <Input id="action" name="action" type="text" />
+          </Field>
+
+          <Field label="Notes (opsional)" htmlFor="notes">
+            <Textarea id="notes" name="notes" rows={2} />
+          </Field>
+
+          <Field label="Ganti Part (opsional)" htmlFor="gantiPart">
+            <Select id="gantiPart" name="gantiPart" defaultValue="">
+              <option value="">Tidak ada</option>
+              <option value="STOCK">Stock</option>
+              <option value="SCRAP">Scrap</option>
+            </Select>
           </Field>
 
           <Field label="Foto (opsional, bisa lebih dari 1)">

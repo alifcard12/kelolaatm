@@ -147,10 +147,25 @@ model Kaset {
   @@map("kaset")
 }
 
+enum KasetCondition {
+  GOOD
+  BAD
+  BROKEN
+  SCRAP
+}
+
+enum GantiPartSource {
+  STOCK
+  SCRAP
+}
+
 model KasetLog {
   id        String          @id @default(cuid())
-  condition DeviceCondition 
+  condition KasetCondition
   problem   String? 
+  action    String? // tindakan yang dilakukan (opsional)
+  notes     String? // catatan tambahan (opsional)
+  gantiPart GantiPartSource? // sumber part pengganti: Stock atau Scrap (opsional)
   createdAt DateTime        @default(now()) // ini "waktu dicatat" sekaligus "last update" kaset
 
   kaset   Kaset  @relation(fields: [kasetId], references: [id], onDelete: Cascade)

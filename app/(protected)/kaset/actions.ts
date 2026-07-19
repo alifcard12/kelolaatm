@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { DeviceCondition, KasetType } from "@prisma/client";
+import { KasetType, KasetCondition, GantiPartSource } from "@prisma/client";
 import { deletePhoto } from "@/lib/cloudinary";
 
 const MAX_PHOTOS = 6;
@@ -48,8 +48,12 @@ function getUploadedPhotos(formData: FormData): UploadedPhoto[] {
 export async function createKaset(formData: FormData) {
   const serialNumber = String(formData.get("serialNumber") ?? "").trim();
   const type = String(formData.get("type")) as KasetType;
-  const condition = String(formData.get("condition")) as DeviceCondition;
+  const condition = String(formData.get("condition")) as KasetCondition;
   const problem = String(formData.get("problem") ?? "").trim() || null;
+  const action = String(formData.get("action") ?? "").trim() || null;
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const gantiPartRaw = String(formData.get("gantiPart") ?? "").trim();
+  const gantiPart = gantiPartRaw ? (gantiPartRaw as GantiPartSource) : null;
 
   if (!serialNumber || !type || !condition) {
     throw new Error("SN, tipe, dan kondisi wajib diisi.");
@@ -65,6 +69,9 @@ export async function createKaset(formData: FormData) {
         create: {
           condition,
           problem,
+          action,
+          notes,
+          gantiPart,
           photos: { create: uploaded.map((p) => ({ url: p.url, publicId: p.publicId })) },
         },
       },
@@ -92,8 +99,12 @@ export async function updateKasetType(kasetId: string, formData: FormData) {
 }
 
 export async function addKasetLog(kasetId: string, formData: FormData) {
-  const condition = String(formData.get("condition")) as DeviceCondition;
+  const condition = String(formData.get("condition")) as KasetCondition;
   const problem = String(formData.get("problem") ?? "").trim() || null;
+  const action = String(formData.get("action") ?? "").trim() || null;
+  const notes = String(formData.get("notes") ?? "").trim() || null;
+  const gantiPartRaw = String(formData.get("gantiPart") ?? "").trim();
+  const gantiPart = gantiPartRaw ? (gantiPartRaw as GantiPartSource) : null;
 
   if (!condition) {
     throw new Error("Kondisi wajib diisi.");
@@ -106,6 +117,9 @@ export async function addKasetLog(kasetId: string, formData: FormData) {
       kasetId,
       condition,
       problem,
+      action,
+      notes,
+      gantiPart,
       photos: { create: uploaded.map((p) => ({ url: p.url, publicId: p.publicId })) },
     },
   });

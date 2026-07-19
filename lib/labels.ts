@@ -29,6 +29,25 @@ export const KASET_TYPE_LABEL: Record<string, string> = {
   CURRENCY: "Currency",
 };
 
+export const KASET_CONDITION_LABEL: Record<string, string> = {
+  GOOD: "Good",
+  BAD: "Bad",
+  BROKEN: "Broken",
+  SCRAP: "Scrap",
+};
+
+export const KASET_CONDITION_TONE: Record<string, BadgeTone> = {
+  GOOD: "success",
+  BAD: "warning",
+  BROKEN: "danger",
+  SCRAP: "neutral",
+};
+
+export const GANTI_PART_LABEL: Record<string, string> = {
+  STOCK: "Stock",
+  SCRAP: "Scrap",
+};
+
 export const TICKET_STATUS_LABEL: Record<string, string> = {
   OPEN: "Open",
   CLOSED: "Closed",
