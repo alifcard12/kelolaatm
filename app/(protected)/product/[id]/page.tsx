@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
 export default async function ProductDetailPage({
   params,
@@ -26,25 +26,29 @@ export default async function ProductDetailPage({
   async function deleteAndRedirect() {
     "use server";
     await deleteProduct(product!.id);
-    redirect("/product");
+    redirect("/product/daftar");
   }
 
   return (
     <div className="max-w-md">
       <Link
-        href="/product"
+        href="/product/daftar"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Product
+        <FiArrowLeft /> Back to Product
       </Link>
 
       <PageHeader
         title={product.name}
-        description="Perubahan stock & harga di sini tidak mengubah transaksi penjualan yang sudah pernah dibuat."
+        description=""
         action={
           <DeleteButton
             action={deleteAndRedirect}
-            label="Hapus Product"
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Product
+              </div>
+            }
             confirmDescription="Product yang sudah pernah dipakai di transaksi penjualan tidak bisa dihapus."
           />
         }
@@ -57,15 +61,33 @@ export default async function ProductDetailPage({
           className="flex flex-col gap-4"
         >
           <Field label="Kode Product" htmlFor="code">
-            <Input id="code" name="code" type="text" required defaultValue={product.code} />
+            <Input
+              id="code"
+              name="code"
+              type="text"
+              required
+              defaultValue={product.code}
+            />
           </Field>
 
           <Field label="Nama Product" htmlFor="name">
-            <Input id="name" name="name" type="text" required defaultValue={product.name} />
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              required
+              defaultValue={product.name}
+            />
           </Field>
 
           <Field label="Kategori" htmlFor="category">
-            <Input id="category" name="category" type="text" required defaultValue={product.category} />
+            <Input
+              id="category"
+              name="category"
+              type="text"
+              required
+              defaultValue={product.category}
+            />
           </Field>
 
           <Field label="Stock" htmlFor="stock">
@@ -92,8 +114,9 @@ export default async function ProductDetailPage({
             />
           </Field>
 
-          <Button type="submit" className="mt-2 self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="mt-2 self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>

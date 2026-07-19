@@ -44,8 +44,8 @@ export async function createProduct(formData: FormData) {
 
   await prisma.product.create({ data: input });
 
-  revalidatePath("/product");
-  redirect("/product");
+  revalidatePath("/product/daftar");
+  redirect("/product/daftar");
 }
 
 export async function updateProduct(id: string, formData: FormData) {
@@ -58,8 +58,8 @@ export async function updateProduct(id: string, formData: FormData) {
 
   await prisma.product.update({ where: { id }, data: input });
 
-  revalidatePath("/product");
-  redirect("/product");
+  revalidatePath("/product/daftar");
+  redirect("/product/daftar");
 }
 
 export async function deleteProduct(id: string) {
@@ -71,5 +71,5 @@ export async function deleteProduct(id: string) {
   }
 
   await prisma.product.delete({ where: { id } });
-  revalidatePath("/product");
+  revalidatePath("/product/daftar");
 }

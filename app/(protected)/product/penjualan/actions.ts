@@ -22,13 +22,16 @@ async function generateUniqueInvoiceNo(): Promise<string> {
   throw new Error("Gagal membuat No. Transaksi. Coba simpan ulang.");
 }
 
-// Parse "YYYY-MM-DD" + "HH:mm" jadi satu Date, diperlakukan sebagai waktu Jakarta (UTC+7).
-function parseJakartaDateTime(dateRaw: string, timeRaw: string): Date {
-  const date = dateRaw.trim();
-  const time = timeRaw.trim() || "00:00";
-  if (!date) throw new Error("Tanggal penjualan wajib diisi.");
-  const parsed = new Date(`${date}T${time}:00+07:00`);
-  if (Number.isNaN(parsed.getTime())) throw new Error("Tanggal/jam penjualan tidak valid.");
+// Parse value input datetime-local ("YYYY-MM-DDTHH:mm") jadi satu Date,
+// diperlakukan sebagai waktu Jakarta (UTC+7).
+function parseJakartaDateTime(dateTimeRaw: string): Date {
+  const raw = dateTimeRaw.trim();
+  if (!raw) throw new Error("Tanggal & jam penjualan wajib diisi.");
+  const [date, time] = raw.split("T");
+  if (!date) throw new Error("Tanggal & jam penjualan tidak valid.");
+  const safeTime = (time || "00:00").slice(0, 5);
+  const parsed = new Date(`${date}T${safeTime}:00+07:00`);
+  if (Number.isNaN(parsed.getTime())) throw new Error("Tanggal & jam penjualan tidak valid.");
   return parsed;
 }
 
@@ -42,15 +45,14 @@ type SaleInput = {
 
 function parseSaleForm(formData: FormData): SaleInput {
   const customerName = String(formData.get("customerName") ?? "").trim();
-  const dateRaw = String(formData.get("saleDate") ?? "");
-  const timeRaw = String(formData.get("saleTime") ?? "");
+  const dateTimeRaw = String(formData.get("saleDateTime") ?? "");
   const itemsRaw = String(formData.get("itemsJson") ?? "[]");
 
   if (!customerName) {
     throw new Error("Nama pelanggan wajib diisi.");
   }
 
-  const saleDate = parseJakartaDateTime(dateRaw, timeRaw);
+  const saleDate = parseJakartaDateTime(dateTimeRaw);
 
   let parsed: unknown;
   try {
@@ -165,7 +167,7 @@ export async function createSale(formData: FormData) {
     }
   });
 
-  revalidatePath("/product");
+  revalidatePath("/product/daftar");
   revalidatePath("/product/penjualan");
   revalidatePath("/finance");
   redirect("/product/penjualan");
@@ -271,7 +273,7 @@ export async function updateSale(id: string, formData: FormData) {
     }
   });
 
-  revalidatePath("/product");
+  revalidatePath("/product/daftar");
   revalidatePath("/product/penjualan");
   revalidatePath("/finance");
   redirect("/product/penjualan");
@@ -305,7 +307,7 @@ export async function deleteSale(id: string) {
     }
   });
 
-  revalidatePath("/product");
+  revalidatePath("/product/daftar");
   revalidatePath("/product/penjualan");
   revalidatePath("/finance");
 }

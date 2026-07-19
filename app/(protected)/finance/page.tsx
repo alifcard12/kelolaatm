@@ -74,37 +74,48 @@ export default async function FinancePage({
   return (
     <div>
       <PageHeader
-        title="Keuangan Operasional"
-        description="Catatan uang masuk dan uang keluar operasional."
+        title=""
+        description=""
         action={
           <LinkButton href="/finance/new">
-            <FiPlus /> Tambah Transaksi
+            <FiPlus /> Tambah
           </LinkButton>
         }
       />
 
       {/* Saldo terakhir — paling atas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
-        <div className="col-span-2 lg:col-span-1">
-          <StatCard label="Saldo Terakhir" value={formatRupiah(saldoTerakhir)} tone="rose" />
-        </div>
-        <StatCard label={`Saldo Awal — ${monthKeyLabel(month)}`} value={formatRupiah(saldoAwalBulan)} />
-        <StatCard label="Total Masuk (Credit)" value={formatRupiah(totalCreditBulan)} tone="neutral" />
-        <StatCard label="Total Keluar (Debit)" value={formatRupiah(totalDebitBulan)} tone="warning" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-1 md:gap-4 mb-1">
+        <StatCard
+          label="Saldo Terakhir"
+          value={formatRupiah(saldoTerakhir)}
+          tone="warning"
+        />
+        <StatCard
+          label={`Saldo Awal — ${monthKeyLabel(month)}`}
+          value={formatRupiah(saldoAwalBulan)}
+        />
+        <StatCard
+          label="Total Masuk (Credit)"
+          value={formatRupiah(totalCreditBulan)}
+          tone="success"
+        />
+        <StatCard
+          label="Total Keluar (Debit)"
+          value={formatRupiah(totalDebitBulan)}
+          tone="rose"
+        />
       </div>
 
-      <Card className="mb-6 flex flex-col gap-3">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <CardTitle>Filter Bulan</CardTitle>
+      <Card className="mb-1 flex flex-col gap-3 !bg-transparent border-none shadow-none">
+        <div className="flex flex-col justify-center md:flex-row md:items-center md:justify-between gap-3">
           <MonthFilter month={month} />
         </div>
-        <p className="text-sm text-espresso-soft">
-          Saldo akhir {monthKeyLabel(month)}:{" "}
-          <span className="font-semibold text-espresso">{formatRupiah(saldoAkhirBulan)}</span>
-        </p>
       </Card>
 
-      <FinanceListClient entries={rowsDesc} onDelete={deleteFinanceEntryWithMonth} />
+      <FinanceListClient
+        entries={rowsDesc}
+        onDelete={deleteFinanceEntryWithMonth}
+      />
     </div>
   );
 }

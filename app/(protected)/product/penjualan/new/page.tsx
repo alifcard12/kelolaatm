@@ -31,8 +31,7 @@ function nowJakartaTime(): string {
 export default async function NewSalePage() {
   const products = await prisma.product.findMany({ orderBy: { name: "asc" } });
 
-  const today = todayJakarta();
-  const now = nowJakartaTime();
+  const nowValue = `${todayJakarta()}T${nowJakartaTime()}`;
 
   return (
     <div className="max-w-xl">
@@ -54,17 +53,24 @@ export default async function NewSalePage() {
           successMessage="Penjualan berhasil ditambahkan"
           className="flex flex-col gap-4"
         >
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Tanggal Penjualan" htmlFor="saleDate">
-              <Input id="saleDate" name="saleDate" type="date" required defaultValue={today} />
-            </Field>
-            <Field label="Jam Penjualan" htmlFor="saleTime">
-              <Input id="saleTime" name="saleTime" type="time" required defaultValue={now} />
-            </Field>
-          </div>
+          <Field label="Tanggal & Jam Penjualan" htmlFor="saleDateTime">
+            <Input
+              id="saleDateTime"
+              name="saleDateTime"
+              type="datetime-local"
+              required
+              defaultValue={nowValue}
+            />
+          </Field>
 
           <Field label="Pelanggan" htmlFor="customerName">
-            <Input id="customerName" name="customerName" type="text" required />
+            <Input
+              id="customerName"
+              name="customerName"
+              type="text"
+              required
+              defaultValue="Alif Ayatullah"
+            />
           </Field>
 
           <SaleItemsForm

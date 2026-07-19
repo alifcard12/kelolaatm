@@ -10,23 +10,29 @@ export function StatCard({
   label: string;
   value: string | number;
   href?: string;
-  tone?: "neutral" | "rose" | "warning" | "danger";
+  tone?: "neutral" | "rose" | "warning" | "danger" | "success";
 }) {
   const valueColor =
     tone === "rose"
       ? "text-rose"
       : tone === "warning"
-      ? "text-warning"
-      : tone === "danger"
-      ? "text-danger"
-      : "text-espresso";
+        ? "text-warning"
+        : tone === "danger"
+          ? "text-danger"
+          : tone === "success"
+            ? "text-success"
+            : "text-espresso";
 
   const content = (
     <Card className="h-full transition-shadow hover:shadow-[var(--shadow-pop)]">
-      <p className="text-xs font-semibold uppercase tracking-wide text-espresso-soft mb-2">
+      <p className="text-xs font-semibold uppercase  text-espresso-soft mb-1">
         {label}
       </p>
-      <p className={`font-display text-3xl font-semibold ${valueColor}`}>{value}</p>
+      <p
+        className={`font-display text-md lg:text-3xl font-semibold ${valueColor}`}
+      >
+        {value}
+      </p>
     </Card>
   );
 

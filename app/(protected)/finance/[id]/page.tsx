@@ -9,7 +9,7 @@ import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
 function toDateInputValue(date: Date): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -44,12 +44,21 @@ export default async function FinanceEntryDetailPage({
         href="/finance"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Keuangan Operasional
+        <FiArrowLeft /> Back to Keuangan
       </Link>
 
       <PageHeader
         title="Edit Transaksi"
-        action={<DeleteButton action={deleteAndRedirect} label="Hapus Transaksi" />}
+        action={
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Transaksi
+              </div>
+            }
+          />
+        }
       />
 
       <Card>
@@ -98,7 +107,12 @@ export default async function FinanceEntryDetailPage({
           </Field>
 
           <Field label="Kategori" htmlFor="category">
-            <Select id="category" name="category" required defaultValue={entry.category}>
+            <Select
+              id="category"
+              name="category"
+              required
+              defaultValue={entry.category}
+            >
               <option value="KETERANGAN">Keterangan</option>
               <option value="TRANSPORTASI">Transportasi</option>
               <option value="SPJ">SPJ</option>
@@ -109,11 +123,17 @@ export default async function FinanceEntryDetailPage({
           </Field>
 
           <Field label="Catatan (opsional)" htmlFor="notes">
-            <Textarea id="notes" name="notes" rows={2} defaultValue={entry.notes ?? ""} />
+            <Textarea
+              id="notes"
+              name="notes"
+              rows={2}
+              defaultValue={entry.notes ?? ""}
+            />
           </Field>
 
-          <Button type="submit" className="mt-2 self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="mt-2 self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>

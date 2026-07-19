@@ -9,7 +9,7 @@ import { Input, Select } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
 function toDateInputValue(date: Date): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -44,13 +44,22 @@ export default async function HotelDetailPage({
         href="/hotel"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Hotel
+        <FiArrowLeft /> Back to Hotel
       </Link>
 
       <PageHeader
         title={hotel.hotelName}
-        description="Perubahan di sini juga akan memperbarui transaksi terkait di Keuangan Operasional."
-        action={<DeleteButton action={deleteAndRedirect} label="Hapus Pemesanan" />}
+        description=""
+        action={
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Hotel
+              </div>
+            }
+          />
+        }
       />
 
       <Card>
@@ -79,11 +88,23 @@ export default async function HotelDetailPage({
           </Field>
 
           <Field label="Email" htmlFor="email">
-            <Input id="email" name="email" type="email" required defaultValue={hotel.email} />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              defaultValue={hotel.email}
+            />
           </Field>
 
           <Field label="Telepon" htmlFor="phone">
-            <Input id="phone" name="phone" type="tel" required defaultValue={hotel.phone} />
+            <Input
+              id="phone"
+              name="phone"
+              type="tel"
+              required
+              defaultValue={hotel.phone}
+            />
           </Field>
 
           <Field label="Tanggal Booking" htmlFor="bookingDate">
@@ -107,7 +128,13 @@ export default async function HotelDetailPage({
           </Field>
 
           <Field label="Nama Hotel" htmlFor="hotelName">
-            <Input id="hotelName" name="hotelName" type="text" required defaultValue={hotel.hotelName} />
+            <Input
+              id="hotelName"
+              name="hotelName"
+              type="text"
+              required
+              defaultValue={hotel.hotelName}
+            />
           </Field>
 
           <Field label="Alamat Hotel" htmlFor="hotelAddress">
@@ -121,7 +148,12 @@ export default async function HotelDetailPage({
           </Field>
 
           <Field label="Tipe Kamar" htmlFor="roomType">
-            <Select id="roomType" name="roomType" required defaultValue={hotel.roomType}>
+            <Select
+              id="roomType"
+              name="roomType"
+              required
+              defaultValue={hotel.roomType}
+            >
               <option value="SUPER_SINGLE">Super Single</option>
               <option value="DELUXE_DOUBLE">Deluxe Double</option>
               <option value="DELUXE_TWIN">Deluxe Twin</option>
@@ -166,7 +198,12 @@ export default async function HotelDetailPage({
           </Field>
 
           <Field label="Metode Pembayaran" htmlFor="paymentMethod">
-            <Select id="paymentMethod" name="paymentMethod" required defaultValue={hotel.paymentMethod}>
+            <Select
+              id="paymentMethod"
+              name="paymentMethod"
+              required
+              defaultValue={hotel.paymentMethod}
+            >
               <option value="ALFAMART">Alfamart</option>
               <option value="BRIVA">BRIVA</option>
               <option value="INDOMARET">Indomaret</option>
@@ -176,8 +213,9 @@ export default async function HotelDetailPage({
             </Select>
           </Field>
 
-          <Button type="submit" className="mt-2 self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="mt-2 self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>

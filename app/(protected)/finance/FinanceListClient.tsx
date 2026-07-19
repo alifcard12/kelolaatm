@@ -15,7 +15,14 @@ import {
   FINANCE_CATEGORY_LABEL,
   FINANCE_CATEGORY_TONE,
 } from "@/lib/labels";
-import { FiSearch, FiArrowUpCircle, FiArrowDownCircle, FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import {
+  FiSearch,
+  FiArrowUpCircle,
+  FiArrowDownCircle,
+  FiMoreVertical,
+  FiTrash2,
+  FiClock,
+} from "react-icons/fi";
 
 type FinanceRow = {
   id: string;
@@ -176,7 +183,9 @@ export function FinanceListClient({
                 className="flex flex-col border-l-4 cursor-pointer active:opacity-80"
                 style={{
                   borderLeftColor:
-                    e.type === "DEBIT" ? "var(--color-danger)" : "var(--color-success)",
+                    e.type === "DEBIT"
+                      ? "var(--color-danger)"
+                      : "var(--color-success)",
                 }}
                 onClick={() => goToDetail(e.id)}
               >
@@ -188,9 +197,11 @@ export function FinanceListClient({
                   </div>
                   <RowMenu onDelete={() => onDelete(e.id)} />
                 </div>
-                <p className="text-xs text-espresso-soft">{formatJakartaDate(e.date)}</p>
+
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={FINANCE_TYPE_TONE[e.type]}>{FINANCE_TYPE_LABEL[e.type]}</Badge>
+                  <Badge tone={FINANCE_TYPE_TONE[e.type]}>
+                    {FINANCE_TYPE_LABEL[e.type]}
+                  </Badge>
                   <Badge tone={FINANCE_CATEGORY_TONE[e.category]}>
                     {FINANCE_CATEGORY_LABEL[e.category]}
                   </Badge>
@@ -206,11 +217,14 @@ export function FinanceListClient({
                     {e.type === "DEBIT" ? "-" : "+"}
                     {formatRupiah(e.amount)}
                   </span>
-                  <span className="text-xs text-espresso-soft">
-                    Saldo: {formatRupiah(e.runningBalance)}
-                  </span>
+                  <p className="text-xs text-espresso-soft flex items-center gap-1">
+                    <FiClock />
+                    {formatJakartaDate(e.date)}
+                  </p>
                 </div>
-                {e.notes && <p className="text-xs text-espresso-soft/80">{e.notes}</p>}
+                {e.notes && (
+                  <p className="text-xs text-espresso-soft/80">{e.notes}</p>
+                )}
               </Card>
             ))}
           </div>
@@ -233,7 +247,9 @@ export function FinanceListClient({
                   className="cursor-pointer"
                   style={{
                     boxShadow: `inset 3px 0 0 0 ${
-                      e.type === "DEBIT" ? "var(--color-danger)" : "var(--color-success)"
+                      e.type === "DEBIT"
+                        ? "var(--color-danger)"
+                        : "var(--color-success)"
                     }`,
                   }}
                   onClick={() => goToDetail(e.id)}
@@ -244,7 +260,9 @@ export function FinanceListClient({
                   <Td className="font-medium">
                     {e.description}
                     {e.notes && (
-                      <div className="text-xs text-espresso-soft/70 mt-0.5">{e.notes}</div>
+                      <div className="text-xs text-espresso-soft/70 mt-0.5">
+                        {e.notes}
+                      </div>
                     )}
                   </Td>
                   <Td>
@@ -253,7 +271,9 @@ export function FinanceListClient({
                     </Badge>
                   </Td>
                   <Td>
-                    <Badge tone={FINANCE_TYPE_TONE[e.type]}>{FINANCE_TYPE_LABEL[e.type]}</Badge>
+                    <Badge tone={FINANCE_TYPE_TONE[e.type]}>
+                      {FINANCE_TYPE_LABEL[e.type]}
+                    </Badge>
                   </Td>
                   <Td
                     className={`text-right font-semibold whitespace-nowrap ${

@@ -10,24 +10,22 @@ import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { SaleItemsForm } from "../SaleItemsForm";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
-function toDateInputValue(date: Date): string {
-  return new Intl.DateTimeFormat("en-CA", {
+function toDateTimeInputValue(date: Date): string {
+  const datePart = new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Jakarta",
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
   }).format(date);
-}
-
-function toTimeInputValue(date: Date): string {
-  return new Intl.DateTimeFormat("en-GB", {
+  const timePart = new Intl.DateTimeFormat("en-GB", {
     timeZone: "Asia/Jakarta",
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
   }).format(date);
+  return `${datePart}T${timePart}`;
 }
 
 export default async function SaleDetailPage({
@@ -37,20 +35,30 @@ export default async function SaleDetailPage({
 }) {
   const { id } = await params;
 
-  const sale = await prisma.sale.findUnique({ where: { id }, include: { items: true } });
+  const sale = await prisma.sale.findUnique({
+    where: { id },
+    include: { items: true },
+  });
   if (!sale) notFound();
 
   // Product yang dipakai di transaksi ini (termasuk yang stock-nya sekarang 0)
   // digabung dengan semua product lain, supaya bisa dipilih ulang saat edit.
-  const allProducts = await prisma.product.findMany({ orderBy: { name: "asc" } });
-  const productIdsInSale = new Set(sale.items.map((it) => it.productId).filter(Boolean) as string[]);
+  const allProducts = await prisma.product.findMany({
+    orderBy: { name: "asc" },
+  });
+  const productIdsInSale = new Set(
+    sale.items.map((it) => it.productId).filter(Boolean) as string[],
+  );
 
   // Stock yang ditampilkan untuk product yang sudah dipakai di transaksi ini
   // ditambah kembali kuantitas lama, supaya jumlah lama tetap valid dipilih ulang.
   const oldQtyByProduct = new Map<string, number>();
   for (const item of sale.items) {
     if (item.productId) {
-      oldQtyByProduct.set(item.productId, (oldQtyByProduct.get(item.productId) ?? 0) + item.quantity);
+      oldQtyByProduct.set(
+        item.productId,
+        (oldQtyByProduct.get(item.productId) ?? 0) + item.quantity,
+      );
     }
   }
 
@@ -76,16 +84,20 @@ export default async function SaleDetailPage({
         href="/product/penjualan"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Penjualan
+        <FiArrowLeft /> Back to Penjualan
       </Link>
 
       <PageHeader
         title={sale.invoiceNo}
-        description="Perubahan di sini akan menyesuaikan ulang stock product dan transaksi terkait di Keuangan Operasional."
+        description=""
         action={
           <DeleteButton
             action={deleteAndRedirect}
-            label="Hapus Penjualan"
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Penjualan
+              </div>
+            }
             confirmDescription="Stock barang akan dikembalikan dan transaksi di Keuangan Operasional ikut terhapus."
           />
         }
@@ -97,26 +109,15 @@ export default async function SaleDetailPage({
           successMessage="Penjualan berhasil diperbarui"
           className="flex flex-col gap-4"
         >
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Tanggal Penjualan" htmlFor="saleDate">
-              <Input
-                id="saleDate"
-                name="saleDate"
-                type="date"
-                required
-                defaultValue={toDateInputValue(sale.saleDate)}
-              />
-            </Field>
-            <Field label="Jam Penjualan" htmlFor="saleTime">
-              <Input
-                id="saleTime"
-                name="saleTime"
-                type="time"
-                required
-                defaultValue={toTimeInputValue(sale.saleDate)}
-              />
-            </Field>
-          </div>
+          <Field label="Tanggal & Jam Penjualan" htmlFor="saleDateTime">
+            <Input
+              id="saleDateTime"
+              name="saleDateTime"
+              type="datetime-local"
+              required
+              defaultValue={toDateTimeInputValue(sale.saleDate)}
+            />
+          </Field>
 
           <Field label="Pelanggan" htmlFor="customerName">
             <Input
@@ -131,12 +132,18 @@ export default async function SaleDetailPage({
           <SaleItemsForm
             products={productOptions}
             initialItems={sale.items
-              .filter((it) => it.productId && productIdsInSale.has(it.productId))
-              .map((it) => ({ productId: it.productId as string, quantity: it.quantity }))}
+              .filter(
+                (it) => it.productId && productIdsInSale.has(it.productId),
+              )
+              .map((it) => ({
+                productId: it.productId as string,
+                quantity: it.quantity,
+              }))}
           />
 
-          <Button type="submit" className="mt-2 self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="mt-2 self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>
