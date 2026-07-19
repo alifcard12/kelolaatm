@@ -420,3 +420,40 @@ model SaleItem {
 
   @@map("sale_items")
 }
+
+enum NoteCategory {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+  ARCHIVE
+}
+
+model Note {
+  id        String       @id @default(cuid())
+  title     String
+  content   String? // catatan penting
+  link      String? // link penting
+  category  NoteCategory @default(MEDIUM)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  attachments NoteAttachment[]
+
+  @@map("notes")
+}
+
+model NoteAttachment {
+  id           String   @id @default(cuid())
+  url          String // secure_url dari Cloudinary
+  publicId     String // public_id Cloudinary, dipakai kalau nanti mau hapus file
+  resourceType String // resource_type Cloudinary: "image" atau "raw" (dipakai saat hapus)
+  fileKind     String // untuk tampilan: "image" | "pdf" | "excel"
+  filename     String
+  createdAt    DateTime @default(now())
+
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  noteId String
+
+  @@map("note_attachments")
+}

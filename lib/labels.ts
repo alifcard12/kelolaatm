@@ -130,3 +130,19 @@ export const FINANCE_CATEGORY_TONE: Record<string, BadgeTone> = {
   PENGIRIMAN: "info",
   OPERASIONAL: "neutral",
 };
+
+export const NOTE_CATEGORY_LABEL: Record<string, string> = {
+  URGENT: "Urgent",
+  HIGH: "High",
+  MEDIUM: "Medium",
+  LOW: "Low",
+  ARCHIVE: "Archive",
+};
+
+export const NOTE_CATEGORY_TONE: Record<string, BadgeTone> = {
+  URGENT: "danger",
+  HIGH: "warning",
+  MEDIUM: "info",
+  LOW: "success",
+  ARCHIVE: "neutral",
+};

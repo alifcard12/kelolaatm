@@ -38,9 +38,13 @@ export async function uploadPhotos(files: File[], folder: string): Promise<Uploa
   );
 }
 
-/** Hapus satu foto dari Cloudinary berdasarkan public_id-nya. */
-export async function deletePhoto(publicId: string): Promise<void> {
-  await cloudinary.uploader.destroy(publicId);
+/** Hapus satu file dari Cloudinary berdasarkan public_id-nya.
+ * `resourceType` default "image"; pakai "raw" untuk PDF/Excel. */
+export async function deletePhoto(
+  publicId: string,
+  resourceType: "image" | "raw" | "video" = "image"
+): Promise<void> {
+  await cloudinary.uploader.destroy(publicId, { resource_type: resourceType });
 }
 
 export default cloudinary;

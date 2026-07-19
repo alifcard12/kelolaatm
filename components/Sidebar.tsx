@@ -12,6 +12,7 @@ const navItems = [
   { href: "/devices", label: "Perangkat Pendukung" },
   { href: "/kaset", label: "Kaset" },
   { href: "/tickets", label: "Ticket" },
+  { href: "/notes", label: "Catatan" },
   { href: "/travel", label: "Travel" },
   { href: "/hotel", label: "Hotel" },
   { href: "/product", label: "Product" },
