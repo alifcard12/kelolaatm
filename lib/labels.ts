@@ -25,7 +25,7 @@ export const DEVICE_TYPE_LABEL: Record<string, string> = {
 };
 
 export const KASET_TYPE_LABEL: Record<string, string> = {
-  ALL_IN: "All in One",
+  ALL_IN: "All in",
   CURRENCY: "Currency",
 };
 
@@ -81,8 +81,8 @@ export const HISTORY_ACTION_TONE: Record<string, BadgeTone> = {
 };
 
 export const FINANCE_TYPE_LABEL: Record<string, string> = {
-  DEBIT: "Debit (Keluar)",
-  CREDIT: "Credit (Masuk)",
+  DEBIT: "Debit",
+  CREDIT: "Credit",
 };
 
 export const FINANCE_TYPE_TONE: Record<string, BadgeTone> = {

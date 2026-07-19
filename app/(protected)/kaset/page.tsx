@@ -27,8 +27,8 @@ export default async function KasetListPage() {
   return (
     <div>
       <PageHeader
-        title="Kaset"
-        description="Riwayat kondisi kaset all-in-one dan currency."
+        title=""
+        description=""
         action={
           <LinkButton href="/kaset/new">
             <FiPlus /> Tambah Kaset
