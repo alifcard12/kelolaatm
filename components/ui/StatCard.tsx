@@ -25,7 +25,7 @@ export function StatCard({
 
   const content = (
     <Card className="h-full transition-shadow hover:shadow-[var(--shadow-pop)]">
-      <p className="text-xs font-semibold uppercase  text-espresso-soft mb-1">
+      <p className="text-xs font-semibold uppercase  text-espresso-soft ">
         {label}
       </p>
       <p

@@ -11,14 +11,14 @@ export default async function ProductListPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between ">
         <ProductNav />
         <PageHeader
           title=""
           description=""
           action={
             <LinkButton href="/product/new">
-              <FiPlus /> Tambah Product
+              <FiPlus /> Product
             </LinkButton>
           }
         />

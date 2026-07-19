@@ -14,14 +14,14 @@ export default async function SaleListPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between ">
         <ProductNav />
         <PageHeader
           title=""
           description=""
           action={
             <LinkButton href="/product/penjualan/new">
-              <FiPlus /> Tambah Penjualan
+              <FiPlus /> Penjualan
             </LinkButton>
           }
         />
