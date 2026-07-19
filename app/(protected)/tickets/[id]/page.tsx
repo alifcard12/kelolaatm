@@ -20,9 +20,10 @@ import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft, FiSave } from "react-icons/fi";
+import { FiArrowLeft, FiCopy, FiSave, FiTrash } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { TICKET_STATUS_LABEL, TICKET_STATUS_TONE } from "@/lib/labels";
+import { RiDoorOpenFill } from "react-icons/ri";
 
 function deviceLabel(d: { type: string; brand: string; serialNumber: string }) {
   return `${d.type} — ${d.brand} — SN ${d.serialNumber}`;
@@ -85,35 +86,53 @@ export default async function TicketDetailPage({
         href="/tickets"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Tiket
+        <FiArrowLeft /> Back to Tiket
       </Link>
 
       <PageHeader
-        title={`${ticket.atm.tid} — ${ticket.atm.location}`}
-        description={`${ticket.atm.branch} · SSB: ${ticket.atm.ssb}`}
+        title={`${ticket.atm.tid} - ${ticket.atm.location}`}
+        description={`${ticket.atm.branch} - SSB: ${ticket.atm.ssb}`}
         action={
           <div className="flex items-center gap-3">
             <Badge tone={TICKET_STATUS_TONE[ticket.status]}>
               {TICKET_STATUS_LABEL[ticket.status]}
             </Badge>
-            <DeleteButton action={deleteAndRedirect} label="Hapus Tiket" />
+            <DeleteButton
+              action={deleteAndRedirect}
+              label={
+                <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                  <FiTrash /> Hapus Tiket
+                </div>
+              }
+            />
           </div>
         }
       />
 
       <div className="text-xs text-espresso-soft/70 mb-2">
-        Dibuka: {formatJakartaDateTime(ticket.openedAt)}
+        Open: {formatJakartaDateTime(ticket.openedAt)}
         {ticket.status === "CLOSED" && ticket.closedAt && (
-          <> · Ditutup: {formatJakartaDateTime(ticket.closedAt)}</>
+          <> · Closed: {formatJakartaDateTime(ticket.closedAt)}</>
         )}
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <CopyTextButton text={openText} label="Copy Teks Open" />
+        <CopyTextButton
+          text={openText}
+          label={
+            <span className="flex items-center gap-2">
+              <FiCopy /> Open
+            </span>
+          }
+        />
         {ticket.status === "CLOSED" && (
           <CopyTextButton
             text={closeText}
-            label="Copy Teks Close"
+            label={
+              <span className="flex items-center gap-2">
+                <FiCopy /> Close
+              </span>
+            }
             className="bg-success text-paper text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-success/90 transition-colors"
           />
         )}
@@ -122,7 +141,8 @@ export default async function TicketDetailPage({
             action={reopenTicket.bind(null, ticket.id)}
             successMessage="Tiket dibuka kembali"
           >
-            <button className="text-espresso-soft hover:text-rose text-xs px-2 transition-colors">
+            <button className="text-xs font-semibold inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-info text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/2">
+              <RiDoorOpenFill />
               Buka Kembali
             </button>
           </ActionForm>
@@ -167,7 +187,7 @@ export default async function TicketDetailPage({
             )}
           </Field>
 
-          <Button type="submit" className="self-start">
+          <Button variant="success" type="submit" className="self-start">
             <FiSave />
             Simpan Perubahan
           </Button>

@@ -9,7 +9,7 @@ import { Input, Select } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
 function toDateInputValue(date: Date): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -44,20 +44,29 @@ export default async function TravelDetailPage({
         href="/travel"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Travel
+        <FiArrowLeft /> Back to Travel
       </Link>
 
       <PageHeader
         title={travel.invoiceNo}
-        description="Perubahan di sini juga akan memperbarui transaksi terkait di Keuangan Operasional."
-        action={<DeleteButton action={deleteAndRedirect} label="Hapus Pemesanan" />}
+        description=""
+        action={
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Travel
+              </div>
+            }
+          />
+        }
       />
 
       <Card>
         <ActionForm
           action={updateTravelWithId}
           successMessage="Pemesanan travel berhasil diperbarui"
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-1"
         >
           <Field label="No Invoice">
             <Input value={travel.invoiceNo} type="text" disabled />
@@ -94,7 +103,13 @@ export default async function TravelDetailPage({
           </Field>
 
           <Field label="Berangkat Dari" htmlFor="origin">
-            <Input id="origin" name="origin" type="text" required defaultValue={travel.origin} />
+            <Input
+              id="origin"
+              name="origin"
+              type="text"
+              required
+              defaultValue={travel.origin}
+            />
           </Field>
 
           <Field label="Tujuan" htmlFor="destination">
@@ -108,7 +123,12 @@ export default async function TravelDetailPage({
           </Field>
 
           <Field label="Nama Kendaraan" htmlFor="vehicle">
-            <Select id="vehicle" name="vehicle" required defaultValue={travel.vehicle}>
+            <Select
+              id="vehicle"
+              name="vehicle"
+              required
+              defaultValue={travel.vehicle}
+            >
               <option value="AVANZA">Avanza</option>
               <option value="XENIA">Xenia</option>
               <option value="SIGRA">Sigra</option>
@@ -140,8 +160,9 @@ export default async function TravelDetailPage({
             />
           </Field>
 
-          <Button type="submit" className="mt-2 self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="mt-2 self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>

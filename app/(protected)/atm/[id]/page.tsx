@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FiChevronLeft, FiClock, FiPlus, FiSave } from "react-icons/fi";
+import { FiArrowLeft, FiClock, FiPlus, FiSave, FiTrash } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import {
   CONDITION_LABEL,
@@ -71,12 +71,21 @@ export default async function AtmDetailPage({
         href="/atm"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Data ATM
+        <FiArrowLeft /> Back to ATM
       </Link>
 
       <PageHeader
         title={`TID ${atm.tid}`}
-        action={<DeleteButton action={deleteAndRedirect} label="Hapus ATM" />}
+        action={
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus ATM
+              </div>
+            }
+          />
+        }
       />
 
       {/* Edit info ATM */}
@@ -138,7 +147,7 @@ export default async function AtmDetailPage({
               defaultValue={atm.ssb}
             />
           </Field>
-          <Button type="submit" className="self-start">
+          <Button variant="success" type="submit" className="self-start">
             <FiSave />
             Simpan
           </Button>
@@ -289,7 +298,7 @@ export default async function AtmDetailPage({
                     {HISTORY_ACTION_LABEL[h.action]}
                   </Badge>
                   <div className="text-sm text-espresso mt-1.5">
-                    {h.deviceType} — {h.brand} — SN {h.serialNumber}
+                    {h.deviceType} - {h.brand} - SN {h.serialNumber}
                   </div>
                   {h.note && (
                     <div className="text-xs text-espresso-soft/70 mt-1">
@@ -297,7 +306,8 @@ export default async function AtmDetailPage({
                     </div>
                   )}
                 </div>
-                <span className="text-xs text-espresso-soft/70 whitespace-nowrap">
+                <span className="text-xs text-espresso-soft/70 whitespace-nowrap flex items-center gap-1">
+                  <FiClock />
                   {formatJakartaDateTime(h.createdAt)}
                 </span>
               </Card>
@@ -379,7 +389,7 @@ export default async function AtmDetailPage({
           <Field label="Foto (opsional, bisa lebih dari 1)">
             <PhotoUploader folder="atm-logs" />
           </Field>
-          <Button type="submit" className="self-start">
+          <Button variant="success" type="submit" className="self-start">
             <FiSave />
             Simpan
           </Button>
@@ -405,7 +415,11 @@ export default async function AtmDetailPage({
               </span>
               <DeleteButton
                 action={deleteAtmLog.bind(null, atm.id, log.id)}
-                label="Hapus Riwayat"
+                label={
+                  <div className="inline-flex items-center px-1 py-1 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                    <FiTrash />
+                  </div>
+                }
               />
             </div>
             {log.note && (

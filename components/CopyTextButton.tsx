@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ReactNode } from "react"; // 1. Import ReactNode
 
 export default function CopyTextButton({
   text,
@@ -8,7 +8,7 @@ export default function CopyTextButton({
   className,
 }: {
   text: string;
-  label: string;
+  label: ReactNode; // 2. Ubah tipe string menjadi ReactNode di sini
   className?: string;
 }) {
   const [copied, setCopied] = useState(false);

@@ -6,13 +6,15 @@ import { FiPlus } from "react-icons/fi";
 import { TravelListClient } from "./TravelListClient";
 
 export default async function TravelListPage() {
-  const travels = await prisma.travel.findMany({ orderBy: { orderDate: "desc" } });
+  const travels = await prisma.travel.findMany({
+    orderBy: { orderDate: "desc" },
+  });
 
   return (
     <div>
       <PageHeader
-        title="Travel"
-        description="Data pemesanan travel. Setiap pemesanan otomatis tercatat di Keuangan Operasional."
+        title=""
+        description=""
         action={
           <LinkButton href="/travel/new">
             <FiPlus /> Tambah Pemesanan

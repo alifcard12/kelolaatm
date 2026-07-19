@@ -24,8 +24,8 @@ export default async function NotesPage() {
   return (
     <div>
       <PageHeader
-        title="Catatan"
-        description="Catatan penting, link, dan file (foto/PDF/Excel) di satu tempat."
+        title=""
+        description=""
         action={
           <LinkButton href="/notes/new">
             <FiPlus /> Tambah Catatan

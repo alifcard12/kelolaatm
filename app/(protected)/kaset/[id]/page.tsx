@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FiChevronLeft, FiSave, FiTrash, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiClock, FiSave, FiTrash } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import {
   KASET_CONDITION_LABEL,
@@ -54,7 +54,7 @@ export default async function KasetDetailPage({
         href="/kaset"
         className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
       >
-        <FiChevronLeft /> Kembali ke Kaset
+        <FiArrowLeft /> Back to Kaset
       </Link>
 
       <PageHeader
@@ -130,9 +130,9 @@ export default async function KasetDetailPage({
           <Field label="Foto (opsional, bisa lebih dari 1)">
             <PhotoUploader />
           </Field>
-          <Button type="submit" className="self-start">
+          <Button variant="success" type="submit" className="self-start">
             <FiSave />
-            Simpan Update
+            Simpan
           </Button>
         </ActionForm>
       </Card>
@@ -155,13 +155,14 @@ export default async function KasetDetailPage({
                 {KASET_CONDITION_LABEL[log.condition]}
               </Badge>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-espresso-soft/70">
+                <span className="text-xs text-espresso-soft/70 flex items-center gap-1">
+                  <FiClock className="text-espresso-soft" />
                   {formatJakartaDateTime(log.createdAt)}
                 </span>
                 <DeleteButton
                   action={deleteKasetLog.bind(null, kaset.id, log.id)}
                   label={
-                    <div className="inline-flex items-center px-1.5 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                    <div className="inline-flex items-center px-1 py-1 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
                       <FiTrash />
                     </div>
                   }

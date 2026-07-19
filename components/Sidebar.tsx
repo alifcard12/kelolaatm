@@ -9,14 +9,14 @@ import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
 
 const navItems = [
   { href: "/atm", label: "ATM" },
-  { href: "/devices", label: "Perangkat Pendukung" },
+  { href: "/devices", label: "Perangkat" },
   { href: "/kaset", label: "Kaset" },
   { href: "/tickets", label: "Ticket" },
   { href: "/notes", label: "Catatan" },
   { href: "/travel", label: "Travel" },
   { href: "/hotel", label: "Hotel" },
   { href: "/product", label: "Product" },
-  { href: "/finance", label: "Keuangan Operasional" },
+  { href: "/finance", label: "Keuangan" },
   { href: "/visits", label: "Jadwal Kunjungan" },
 ];
 
@@ -29,14 +29,22 @@ function Brand() {
     <Link href="/" className="flex items-center gap-3 px-2">
       <BrandMark className="h-9 w-9 shrink-0" />
       <div className="leading-tight">
-        <p className="font-display text-base font-semibold text-espresso">Kelola ATM</p>
+        <p className="font-display text-base font-semibold text-espresso">
+          Kelola ATM
+        </p>
         <p className="text-[11px] text-espresso-soft">Operasional & Servis</p>
       </div>
     </Link>
   );
 }
 
-function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+function NavLinks({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string;
+  onNavigate?: () => void;
+}) {
   return (
     <nav className="flex flex-col gap-1">
       {navItems.map((item) => {
@@ -111,7 +119,9 @@ export default function Sidebar() {
       {/* --- Drawer mobile --- */}
       <div
         className={`md:hidden fixed inset-0 z-40 transition-opacity duration-200 ${
-          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+          open
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0"
         }`}
         role="dialog"
         aria-modal="true"
@@ -121,7 +131,7 @@ export default function Sidebar() {
           className="absolute inset-0 bg-espresso/40 backdrop-blur-[1px]"
         />
         <div
-          className={`absolute inset-y-0 left-0 w-72 max-w-[80%] bg-cream border-r border-taupe/70 p-4 flex flex-col gap-6 shadow-[var(--shadow-pop)] transition-transform duration-200 ${
+          className={`absolute inset-y-0 left-0 w-72 max-w-[60%] bg-cream border-r border-taupe/70 p-4 flex flex-col gap-6 shadow-[var(--shadow-pop)] transition-transform duration-200 ${
             open ? "translate-x-0" : "-translate-x-full"
           }`}
         >

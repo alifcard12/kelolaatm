@@ -3,6 +3,7 @@ import type { ButtonHTMLAttributes, AnchorHTMLAttributes } from "react";
 
 export type ButtonVariant =
   | "primary"
+  | "success"
   | "secondary"
   | "ghost"
   | "danger"
@@ -13,6 +14,8 @@ export type ButtonSize = "sm" | "md";
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
     "bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20",
+  success:
+    "bg-success text-paper hover:bg-success/90 active:bg-success/90 shadow-sm shadow-success/20",
   dark: "bg-espresso text-paper hover:bg-espresso/90 active:bg-espresso/90",
   secondary:
     "bg-paper text-espresso border border-taupe-dark/70 hover:bg-cream active:bg-cream",

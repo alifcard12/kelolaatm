@@ -19,6 +19,7 @@ import {
   FiArrowDown,
   FiMoreVertical,
   FiTrash2,
+  FiCopy,
 } from "react-icons/fi";
 
 type TicketRow = {
@@ -283,9 +284,9 @@ export function TicketListClient({
                   {t.problem}
                 </div>
                 <div className="text-xs text-espresso-soft/70 mb-">
-                  Dibuka: {formatJakartaDateTime(t.openedAt)}
+                  Open: {formatJakartaDateTime(t.openedAt)}
                   {t.status === "CLOSED" && t.closedAt && (
-                    <> · Ditutup: {formatJakartaDateTime(t.closedAt)}</>
+                    <> · Closed: {formatJakartaDateTime(t.closedAt)}</>
                   )}
                   {t.status === "CLOSED" && t.ticketNumber && (
                     <> · No. Tiket: {t.ticketNumber}</>
@@ -306,12 +307,23 @@ export function TicketListClient({
                   className="flex flex-wrap items-center gap-2"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <CopyTextButton text={openText} label="Copy Teks Open" />
+                  <CopyTextButton
+                    text={openText}
+                    label={
+                      <span className="flex items-center gap-2">
+                        <FiCopy /> Open
+                      </span>
+                    }
+                  />
 
                   {t.status === "CLOSED" && (
                     <CopyTextButton
                       text={closeText}
-                      label="Copy Teks Close"
+                      label={
+                        <span className="flex items-center gap-2">
+                          <FiCopy /> Close
+                        </span>
+                      }
                       className="bg-success text-paper text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-success/90 transition-colors"
                     />
                   )}

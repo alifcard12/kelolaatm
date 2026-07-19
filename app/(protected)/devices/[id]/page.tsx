@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { updateDevice, addDeviceLog, deleteDeviceLog, deleteDeviceLogPhoto, deleteDevice } from "../actions";
+import {
+  updateDevice,
+  addDeviceLog,
+  deleteDeviceLog,
+  deleteDeviceLogPhoto,
+  deleteDevice,
+} from "../actions";
 import { formatJakartaDateTime, formatRelativeTime } from "@/lib/date";
 import { PhotoUploader } from "@/components/PhotoUploader";
 import { PhotoLightbox } from "@/components/PhotoLightbox";
@@ -13,11 +19,15 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { FiChevronLeft } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { CONDITION_LABEL, CONDITION_TONE } from "@/lib/labels";
 
-export default async function DeviceDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function DeviceDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const device = await prisma.device.findUnique({
@@ -33,7 +43,10 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
   const currentDevice = device;
   const updateDeviceWithId = updateDevice.bind(null, currentDevice.id);
   const addDeviceLogWithId = addDeviceLog.bind(null, currentDevice.id);
-  const deleteDeviceLogPhotoWithId = deleteDeviceLogPhoto.bind(null, currentDevice.id);
+  const deleteDeviceLogPhotoWithId = deleteDeviceLogPhoto.bind(
+    null,
+    currentDevice.id,
+  );
 
   async function deleteAndRedirect() {
     "use server";
@@ -43,26 +56,51 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-2xl">
-      <Link href="/devices" className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2">
-        <FiChevronLeft /> Kembali ke Perangkat
+      <Link
+        href="/devices"
+        className="inline-flex items-center gap-1 text-xs text-espresso-soft hover:text-rose mb-2"
+      >
+        <FiArrowLeft /> Kembali ke Perangkat
       </Link>
 
       <PageHeader
         title={`${device.type} — ${device.brand}`}
         description={
-          <Link href={`/atm/${device.atm.id}`} className="hover:text-rose transition-colors">
+          <Link
+            href={`/atm/${device.atm.id}`}
+            className="hover:text-rose transition-colors"
+          >
             TID {device.atm.tid} — {device.atm.location} ({device.atm.branch})
           </Link>
         }
-        action={<DeleteButton action={deleteAndRedirect} label="Hapus Perangkat" />}
+        action={
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Perangkat
+              </div>
+            }
+          />
+        }
       />
 
       {/* Edit info perangkat */}
       <Card className="flex flex-col gap-4 mb-8">
         <CardTitle>Info Perangkat</CardTitle>
-        <ActionForm action={updateDeviceWithId} successMessage="Perangkat berhasil disimpan" className="flex flex-col gap-4">
+        <ActionForm
+          action={updateDeviceWithId}
+          successMessage="Perangkat berhasil disimpan"
+          className="flex flex-col gap-4"
+        >
           <Field label="Brand" htmlFor="brand">
-            <Input id="brand" name="brand" type="text" required defaultValue={device.brand} />
+            <Input
+              id="brand"
+              name="brand"
+              type="text"
+              required
+              defaultValue={device.brand}
+            />
           </Field>
           <Field label="Serial Number" htmlFor="serialNumber">
             <Input
@@ -74,23 +112,36 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
             />
           </Field>
           <Field label="Kondisi" htmlFor="condition">
-            <Select id="condition" name="condition" required defaultValue={device.condition}>
+            <Select
+              id="condition"
+              name="condition"
+              required
+              defaultValue={device.condition}
+            >
               <option value="GOOD">Baik</option>
               <option value="DAMAGED">Rusak</option>
               <option value="NEEDS_REPLACEMENT">Perlu Ganti</option>
             </Select>
           </Field>
           <Field label="Catatan (opsional)" htmlFor="note">
-            <Textarea id="note" name="note" rows={3} defaultValue={device.note ?? ""} />
+            <Textarea
+              id="note"
+              name="note"
+              rows={3}
+              defaultValue={device.note ?? ""}
+            />
           </Field>
           <div className="flex items-center gap-3">
-            <Badge tone={CONDITION_TONE[device.condition]}>{CONDITION_LABEL[device.condition]}</Badge>
+            <Badge tone={CONDITION_TONE[device.condition]}>
+              {CONDITION_LABEL[device.condition]}
+            </Badge>
             <span className="text-xs text-espresso-soft/70">
               Last Update: {formatRelativeTime(device.updatedAt)}
             </span>
           </div>
-          <Button type="submit" className="self-start">
-            Simpan Perubahan
+          <Button variant="success" type="submit" className="self-start">
+            <FiSave />
+            Simpan
           </Button>
         </ActionForm>
       </Card>
@@ -98,7 +149,12 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
       {/* Tambah riwayat + foto perangkat */}
       <Card className="flex flex-col gap-4 mb-8">
         <CardTitle>Tambah Riwayat / Foto Perangkat</CardTitle>
-        <ActionForm action={addDeviceLogWithId} successMessage="Riwayat berhasil ditambahkan" resetOnSuccess className="flex flex-col gap-4">
+        <ActionForm
+          action={addDeviceLogWithId}
+          successMessage="Riwayat berhasil ditambahkan"
+          resetOnSuccess
+          className="flex flex-col gap-4"
+        >
           <Field label="Catatan (opsional)" htmlFor="logNote">
             <Textarea
               id="logNote"
@@ -110,26 +166,46 @@ export default async function DeviceDetailPage({ params }: { params: Promise<{ i
           <Field label="Foto (opsional, bisa lebih dari 1)">
             <PhotoUploader folder="device-logs" />
           </Field>
-          <Button type="submit" className="self-start">
+          <Button variant="success" type="submit" className="self-start">
+            <FiSave />
             Simpan
           </Button>
         </ActionForm>
       </Card>
 
       {/* Riwayat perangkat */}
-      <h3 className="font-display text-sm font-semibold text-espresso mb-3">Riwayat Perangkat</h3>
+      <h3 className="font-display text-sm font-semibold text-espresso mb-3">
+        Riwayat Perangkat
+      </h3>
       <div className="flex flex-col gap-3">
         {device.logs.length === 0 && (
-          <EmptyState title="Belum ada riwayat" description="Riwayat perangkat ini akan muncul di sini." />
+          <EmptyState
+            title="Belum ada riwayat"
+            description="Riwayat perangkat ini akan muncul di sini."
+          />
         )}
         {device.logs.map((log) => (
           <Card key={log.id}>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-espresso-soft/70">{formatJakartaDateTime(log.createdAt)}</span>
-              <DeleteButton action={deleteDeviceLog.bind(null, device.id, log.id)} label="Hapus Riwayat" />
+              <span className="text-xs text-espresso-soft/70">
+                {formatJakartaDateTime(log.createdAt)}
+              </span>
+              <DeleteButton
+                action={deleteDeviceLog.bind(null, device.id, log.id)}
+                label={
+                  <div className="inline-flex items-center px-1 py-1 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                    <FiTrash />
+                  </div>
+                }
+              />
             </div>
-            {log.note && <p className="text-sm text-espresso-soft mt-2">{log.note}</p>}
-            <PhotoLightbox photos={log.photos} onDeletePhoto={deleteDeviceLogPhotoWithId} />
+            {log.note && (
+              <p className="text-sm text-espresso-soft mt-2">{log.note}</p>
+            )}
+            <PhotoLightbox
+              photos={log.photos}
+              onDeletePhoto={deleteDeviceLogPhotoWithId}
+            />
           </Card>
         ))}
       </div>

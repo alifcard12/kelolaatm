@@ -10,16 +10,21 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { DeleteButton } from "@/components/ui/DeleteButton";
 import { Table, Thead, Th, Tbody, Tr, Td } from "@/components/ui/Table";
 import { FiPlus } from "react-icons/fi";
-import { HOTEL_ROOM_TYPE_LABEL, HOTEL_PAYMENT_METHOD_LABEL } from "@/lib/labels";
+import {
+  HOTEL_ROOM_TYPE_LABEL,
+  HOTEL_PAYMENT_METHOD_LABEL,
+} from "@/lib/labels";
 
 export default async function HotelListPage() {
-  const hotels = await prisma.hotel.findMany({ orderBy: { bookingDate: "desc" } });
+  const hotels = await prisma.hotel.findMany({
+    orderBy: { bookingDate: "desc" },
+  });
 
   return (
     <div>
       <PageHeader
-        title="Hotel"
-        description="Data pemesanan hotel. Setiap pemesanan otomatis tercatat di Keuangan Operasional."
+        title=""
+        description=""
         action={
           <LinkButton href="/hotel/new">
             <FiPlus /> Tambah Pemesanan
@@ -45,12 +50,16 @@ export default async function HotelListPage() {
           <Card key={h.id} className="flex flex-col gap-2">
             <div className="flex items-start justify-between gap-3">
               <Link href={`/hotel/${h.id}`} className="min-w-0">
-                <p className="font-display font-semibold text-espresso truncate">{h.hotelName}</p>
+                <p className="font-display font-semibold text-espresso truncate">
+                  {h.hotelName}
+                </p>
                 <p className="text-xs text-espresso-soft">{h.customerName}</p>
               </Link>
               <DeleteButton action={deleteHotel.bind(null, h.id)} />
             </div>
-            <p className="text-xs text-espresso-soft truncate">{h.hotelAddress}</p>
+            <p className="text-xs text-espresso-soft truncate">
+              {h.hotelAddress}
+            </p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-espresso-soft">
               <Badge tone="info">{HOTEL_ROOM_TYPE_LABEL[h.roomType]}</Badge>
               <span>{h.duration} malam</span>
@@ -61,8 +70,12 @@ export default async function HotelListPage() {
               <span>Checkin: {formatJakartaDate(h.checkinDate)}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <Badge tone="neutral">{HOTEL_PAYMENT_METHOD_LABEL[h.paymentMethod]}</Badge>
-              <span className="font-semibold text-espresso">{formatRupiah(h.price)}</span>
+              <Badge tone="neutral">
+                {HOTEL_PAYMENT_METHOD_LABEL[h.paymentMethod]}
+              </Badge>
+              <span className="font-semibold text-espresso">
+                {formatRupiah(h.price)}
+              </span>
             </div>
           </Card>
         ))}
@@ -88,7 +101,10 @@ export default async function HotelListPage() {
             {hotels.map((h) => (
               <Tr key={h.id}>
                 <Td className="font-medium whitespace-nowrap">
-                  <Link href={`/hotel/${h.id}`} className="hover:text-rose transition-colors">
+                  <Link
+                    href={`/hotel/${h.id}`}
+                    className="hover:text-rose transition-colors"
+                  >
                     {h.bookingNo}
                   </Link>
                 </Td>
@@ -108,10 +124,15 @@ export default async function HotelListPage() {
                 <Td className="text-espresso-soft whitespace-nowrap">
                   {HOTEL_PAYMENT_METHOD_LABEL[h.paymentMethod]}
                 </Td>
-                <Td className="text-right font-semibold whitespace-nowrap">{formatRupiah(h.price)}</Td>
+                <Td className="text-right font-semibold whitespace-nowrap">
+                  {formatRupiah(h.price)}
+                </Td>
                 <Td className="text-right">
                   <div className="flex items-center justify-end gap-3">
-                    <Link href={`/hotel/${h.id}`} className="text-xs text-espresso-soft hover:text-rose">
+                    <Link
+                      href={`/hotel/${h.id}`}
+                      className="text-xs text-espresso-soft hover:text-rose"
+                    >
                       Edit
                     </Link>
                     <DeleteButton action={deleteHotel.bind(null, h.id)} />
