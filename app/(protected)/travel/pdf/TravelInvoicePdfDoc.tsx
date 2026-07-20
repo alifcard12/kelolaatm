@@ -1,16 +1,8 @@
-import {
-  Document,
-  Page,
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer";
+import { Document, Page, View, Text, Image, StyleSheet, Font } from "@react-pdf/renderer";
 import { formatJakartaDateLong, formatRupiah } from "@/lib/date";
 import { TRAVEL_VEHICLE_LABEL } from "@/lib/labels";
 import { TRAVEL_INVOICE_VENDOR } from "@/lib/travelInvoiceMeta";
-import type { TravelInvoiceData } from "./TravelInvoiceDoc";
+import type { TravelInvoiceData } from "../print/TravelInvoiceDoc";
 
 const accent = TRAVEL_INVOICE_VENDOR.accentColor;
 
@@ -27,7 +19,6 @@ const styles = StyleSheet.create({
   },
   slip: {
     height: SLIP_HEIGHT,
-    width: 450,
     paddingHorizontal: 14,
     paddingVertical: 12,
     position: "relative",
@@ -88,13 +79,7 @@ const styles = StyleSheet.create({
   thanks: { textAlign: "center", color: accent, fontSize: 8 },
 });
 
-function InvoiceSlip({
-  data,
-  logoSrc,
-}: {
-  data: TravelInvoiceData;
-  logoSrc: string;
-}) {
+function InvoiceSlip({ data, logoSrc }: { data: TravelInvoiceData; logoSrc: string }) {
   const unitPrice = Math.round(data.price / Math.max(1, data.passengerCount));
   const cols = [
     data.origin,
@@ -107,30 +92,10 @@ function InvoiceSlip({
 
   return (
     <View style={styles.slip} wrap={false}>
-      <View
-        style={[
-          styles.corner,
-          { top: 0, left: 0, borderTopWidth: 0, borderLeftWidth: 1 },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          { top: 0, right: 0, borderTopWidth: 0, borderRightWidth: 1 },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          { bottom: 0, left: 0, borderBottomWidth: 0, borderLeftWidth: 1 },
-        ]}
-      />
-      <View
-        style={[
-          styles.corner,
-          { bottom: 0, right: 0, borderBottomWidth: 0, borderRightWidth: 1 },
-        ]}
-      />
+      <View style={[styles.corner, { top: 0, left: 0, borderTopWidth: 1, borderLeftWidth: 1 }]} />
+      <View style={[styles.corner, { top: 0, right: 0, borderTopWidth: 1, borderRightWidth: 1 }]} />
+      <View style={[styles.corner, { bottom: 0, left: 0, borderBottomWidth: 1, borderLeftWidth: 1 }]} />
+      <View style={[styles.corner, { bottom: 0, right: 0, borderBottomWidth: 1, borderRightWidth: 1 }]} />
 
       <View style={styles.header}>
         <Image src={logoSrc} style={styles.logo} />
@@ -143,46 +108,24 @@ function InvoiceSlip({
 
       <View style={styles.metaRow}>
         <View>
-          <Text>
-            <Text style={styles.metaLabel}>No Invoice: </Text>
-            {data.invoiceNo}
-          </Text>
-          <Text>
-            <Text style={styles.metaLabel}>Nama: </Text>
-            {data.customerName}
-          </Text>
+          <Text><Text style={styles.metaLabel}>No Invoice: </Text>{data.invoiceNo}</Text>
+          <Text><Text style={styles.metaLabel}>Nama: </Text>{data.customerName}</Text>
         </View>
         <View style={styles.metaRight}>
-          <Text>
-            <Text style={styles.metaLabel}>Tgl Booking: </Text>
-            {formatJakartaDateLong(data.orderDate)}
-          </Text>
-          <Text>
-            <Text style={styles.metaLabel}>Tgl Berangkat: </Text>
-            {formatJakartaDateLong(data.departureDate)}
-          </Text>
+          <Text><Text style={styles.metaLabel}>Tgl Booking: </Text>{formatJakartaDateLong(data.orderDate)}</Text>
+          <Text><Text style={styles.metaLabel}>Tgl Berangkat: </Text>{formatJakartaDateLong(data.departureDate)}</Text>
         </View>
       </View>
 
       <View style={styles.table}>
         <View style={styles.tr}>
-          {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map(
-            (h) => (
-              <Text key={h} style={styles.th}>
-                {h}
-              </Text>
-            ),
-          )}
+          {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map((h) => (
+            <Text key={h} style={styles.th}>{h}</Text>
+          ))}
         </View>
         <View style={styles.tr}>
           {cols.map((c, i) => (
-            <Text
-              key={i}
-              style={[
-                styles.td,
-                i === cols.length - 1 ? { borderRightWidth: 0 } : {},
-              ]}
-            >
+            <Text key={i} style={[styles.td, i === cols.length - 1 ? { borderRightWidth: 0 } : {}]}>
               {c}
             </Text>
           ))}
@@ -190,12 +133,9 @@ function InvoiceSlip({
       </View>
 
       <Text style={styles.footerDate}>
-        {TRAVEL_INVOICE_VENDOR.issuedCity},{" "}
-        {formatJakartaDateLong(data.orderDate)}
+        {TRAVEL_INVOICE_VENDOR.issuedCity}, {formatJakartaDateLong(data.orderDate)}
       </Text>
-      <Text style={styles.thanks}>
-        Terima kasih telah menggunakan jasa kami.
-      </Text>
+      <Text style={styles.thanks}>Terima kasih telah menggunakan jasa kami.</Text>
     </View>
   );
 }

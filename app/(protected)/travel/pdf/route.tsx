@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   const isInline = request.nextUrl.searchParams.get("inline") === "1";
   const disposition = isInline ? "inline" : "attachment";
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `${disposition}; filename="Invoice_Travel.pdf"`,
