@@ -117,11 +117,11 @@ function RowMenu({ id, onDelete }: { id: string; onDelete: () => void }) {
           />
           <div className="absolute right-0 top-full z-20 mt-1 flex rounded-xl border border-taupe/70 bg-paper shadow-[var(--shadow-pop)] p-1 gap-1">
             <a
-              href={`/travel/print?ids=${id}`}
+              href={`/travel/pdf-preview?ids=${id}`}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              title="Cetak / Export PDF"
+              title="Preview & Export PDF"
               className="flex h-8 w-8 items-center justify-center rounded-lg text-espresso-soft hover:bg-taupe/40 transition-colors"
             >
               <FiPrinter className="h-4 w-4" />
@@ -254,12 +254,12 @@ export function TravelListClient({
               Batal
             </button>
             <a
-              href={`/travel/print?ids=${Array.from(selected).join(",")}`}
+              href={`/travel/pdf-preview?ids=${Array.from(selected).join(",")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-xl bg-espresso text-paper text-xs font-semibold px-3 py-2 hover:bg-espresso/90 transition-colors"
             >
-              <FiPrinter className="h-3.5 w-3.5" /> Cetak Terpilih
+              <FiPrinter className="h-3.5 w-3.5" /> Preview PDF Terpilih
             </a>
           </div>
         </div>

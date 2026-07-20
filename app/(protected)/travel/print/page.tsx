@@ -23,8 +23,7 @@ export default async function TravelPrintPage({
         @media print {
           body { background: white; }
         }
-        .invoice-slip {
-          border-bottom: 1px dashed #bbb;
+        
         }
         .invoice-slip:last-child { border-bottom: none; }
         @media print {
@@ -42,7 +41,7 @@ export default async function TravelPrintPage({
           travels.map((t, i) => (
             <div
               key={t.id}
-              className={`invoice-slip py-3 ${
+              className={`invoice-slip  ${
                 (i + 1) % 4 === 0 && i !== travels.length - 1
                   ? "invoice-page-break"
                   : ""

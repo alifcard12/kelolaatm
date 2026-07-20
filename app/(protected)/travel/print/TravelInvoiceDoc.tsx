@@ -22,15 +22,25 @@ export function TravelInvoiceDoc({ data }: { data: TravelInvoiceData }) {
 
   return (
     <div
-      className="relative px-6 py-5 mx-auto w-full max-w-[720px]"
+      className="relative px-6 pb-6 mx-auto w-full max-w-[720px]"
       style={{ color: "#111" }}
     >
       {/* Tanda potong pojok */}
       {[
-        { top: 0, left: 0, borderTop: "2px solid", borderLeft: "2px solid" },
-        { top: 0, right: 0, borderTop: "2px solid", borderRight: "2px solid" },
-        { bottom: 0, left: 0, borderBottom: "2px solid", borderLeft: "2px solid" },
-        { bottom: 0, right: 0, borderBottom: "2px solid", borderRight: "2px solid" },
+        { top: 0, left: 0, borderTop: "1px solid", borderLeft: "1px solid" },
+        { top: 0, right: 0, borderTop: "1px solid", borderRight: "1px solid" },
+        {
+          bottom: 0,
+          left: 0,
+          borderBottom: "1px solid",
+          borderLeft: "1px solid",
+        },
+        {
+          bottom: 0,
+          right: 0,
+          borderBottom: "1px solid",
+          borderRight: "1px solid",
+        },
       ].map((pos, i) => (
         <span
           key={i}
@@ -40,21 +50,22 @@ export function TravelInvoiceDoc({ data }: { data: TravelInvoiceData }) {
       ))}
 
       {/* Header */}
-      <div className="flex items-start gap-3 mb-3">
+      <div className="flex items-center gap-3 ">
         <img
           src="/branding/travel-bus.png"
           alt="Logo"
-          className="mt-0.5 shrink-0"
-          style={{ width: 62, height: 36, objectFit: "contain" }}
+          style={{ width: 100, height: 100, objectFit: "contain" }}
         />
         <div>
           <h1
-            className="text-2xl font-extrabold leading-tight"
+            className="text-3xl font-extrabold leading-tight"
             style={{ color: accent }}
           >
             {TRAVEL_INVOICE_VENDOR.name}
           </h1>
-          <p className="text-xs text-gray-700">{TRAVEL_INVOICE_VENDOR.address}</p>
+          <p className="text-xs text-gray-700">
+            {TRAVEL_INVOICE_VENDOR.address}
+          </p>
           <p className="text-xs text-gray-700">{TRAVEL_INVOICE_VENDOR.phone}</p>
         </div>
       </div>
@@ -88,35 +99,55 @@ export function TravelInvoiceDoc({ data }: { data: TravelInvoiceData }) {
       >
         <thead>
           <tr>
-            {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map((h) => (
-              <th
-                key={h}
-                className="border px-2 py-1.5 font-bold text-center"
-                style={{ borderColor: accent }}
-              >
-                {h}
-              </th>
-            ))}
+            {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map(
+              (h) => (
+                <th
+                  key={h}
+                  className="border px-2 py-1.5 font-bold text-center"
+                  style={{ borderColor: accent }}
+                >
+                  {h}
+                </th>
+              ),
+            )}
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="border px-2 py-1.5 text-center" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center"
+              style={{ borderColor: accent }}
+            >
               {data.origin}
             </td>
-            <td className="border px-2 py-1.5 text-center" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center"
+              style={{ borderColor: accent }}
+            >
               {data.destination}
             </td>
-            <td className="border px-2 py-1.5 text-center" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center"
+              style={{ borderColor: accent }}
+            >
               {TRAVEL_VEHICLE_LABEL[data.vehicle] ?? data.vehicle}
             </td>
-            <td className="border px-2 py-1.5 text-center whitespace-nowrap" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center whitespace-nowrap"
+              style={{ borderColor: accent }}
+            >
               {formatRupiah(unitPrice)}
             </td>
-            <td className="border px-2 py-1.5 text-center" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center"
+              style={{ borderColor: accent }}
+            >
               {data.passengerCount}
             </td>
-            <td className="border px-2 py-1.5 text-center whitespace-nowrap" style={{ borderColor: accent }}>
+            <td
+              className="border px-2 py-1.5 text-center whitespace-nowrap"
+              style={{ borderColor: accent }}
+            >
               {formatRupiah(data.price)}
             </td>
           </tr>
@@ -124,10 +155,11 @@ export function TravelInvoiceDoc({ data }: { data: TravelInvoiceData }) {
       </table>
 
       <p className="text-right text-sm mb-2">
-        {TRAVEL_INVOICE_VENDOR.issuedCity}, {formatJakartaDateLong(data.orderDate)}
+        {TRAVEL_INVOICE_VENDOR.issuedCity},{" "}
+        {formatJakartaDateLong(data.orderDate)}
       </p>
 
-      <p className="text-center text-xs" style={{ color: accent }}>
+      <p className="text-center text-xs mt-16" style={{ color: accent }}>
         Terima kasih telah menggunakan jasa kami.
       </p>
     </div>
