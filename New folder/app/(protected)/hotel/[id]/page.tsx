@@ -9,7 +9,7 @@ import { Input, Select } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { ActionForm } from "@/components/ui/ActionForm";
 import { DeleteButton } from "@/components/ui/DeleteButton";
-import { FiArrowLeft, FiSave, FiTrash, FiPrinter } from "react-icons/fi";
+import { FiArrowLeft, FiSave, FiTrash } from "react-icons/fi";
 
 function toDateInputValue(date: Date): string {
   return new Intl.DateTimeFormat("en-CA", {
@@ -51,24 +51,14 @@ export default async function HotelDetailPage({
         title={hotel.hotelName}
         description=""
         action={
-          <div className="flex items-center gap-2">
-            <a
-              href={`/hotel/pdf-preview?ids=${hotel.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg bg-espresso text-paper hover:bg-espresso/90"
-            >
-              <FiPrinter /> Preview PDF
-            </a>
-            <DeleteButton
-              action={deleteAndRedirect}
-              label={
-                <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
-                  <FiTrash /> Hapus Hotel
-                </div>
-              }
-            />
-          </div>
+          <DeleteButton
+            action={deleteAndRedirect}
+            label={
+              <div className="inline-flex items-center px-2 py-1.5 rounded-lg gap-1 bg-rose text-paper hover:bg-rose-dark active:bg-rose-dark shadow-sm shadow-rose/20">
+                <FiTrash /> Hapus Hotel
+              </div>
+            }
+          />
         }
       />
 
