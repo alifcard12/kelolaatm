@@ -16,6 +16,7 @@ import {
   FiArrowDown,
   FiMoreVertical,
   FiTrash2,
+  FiPrinter,
 } from "react-icons/fi";
 
 type SaleRow = {
@@ -115,7 +116,7 @@ function SortToggle({
   );
 }
 
-function RowMenu({ onDelete }: { onDelete: () => void }) {
+function RowMenu({ id, onDelete }: { id: string; onDelete: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -142,7 +143,17 @@ function RowMenu({ onDelete }: { onDelete: () => void }) {
               setOpen(false);
             }}
           />
-          <div className="absolute right-0 top-full z-20 mt-1 rounded-xl border border-taupe/70 bg-paper shadow-[var(--shadow-pop)] p-1">
+          <div className="absolute right-0 top-full z-20 mt-1 flex rounded-xl border border-taupe/70 bg-paper shadow-[var(--shadow-pop)] p-1 gap-1">
+            <a
+              href={`/product/penjualan/pdf-preview?ids=${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              title="Preview & Export PDF"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-espresso-soft hover:bg-taupe/40 transition-colors"
+            >
+              <FiPrinter className="h-4 w-4" />
+            </a>
             <DeleteButton
               action={async () => onDelete()}
               label={<FiTrash2 className="h-4 w-4" />}
@@ -167,6 +178,30 @@ export function SaleListClient({
   const [query, setQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("saleDate");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAllFiltered() {
+    setSelected((prev) => {
+      const allSelected = filtered.every((s) => prev.has(s.id));
+      if (allSelected) {
+        const next = new Set(prev);
+        filtered.forEach((s) => next.delete(s.id));
+        return next;
+      }
+      const next = new Set(prev);
+      filtered.forEach((s) => next.add(s.id));
+      return next;
+    });
+  }
 
   function toggleSort(field: SortField) {
     if (sortField === field) {
@@ -229,6 +264,31 @@ export function SaleListClient({
         </div>
       </div>
 
+      {selected.size > 0 && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-taupe-dark/60 bg-cream px-4 py-2.5">
+          <span className="text-sm font-semibold text-espresso">
+            {selected.size} dipilih
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelected(new Set())}
+              className="text-xs font-semibold text-espresso-soft hover:text-espresso transition-colors"
+            >
+              Batal
+            </button>
+            <a
+              href={`/product/penjualan/pdf-preview?ids=${Array.from(selected).join(",")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-espresso text-paper text-xs font-semibold px-3 py-2 hover:bg-espresso/90 transition-colors"
+            >
+              <FiPrinter className="h-3.5 w-3.5" /> Preview PDF Terpilih
+            </a>
+          </div>
+        </div>
+      )}
+
       {sales.length === 0 ? (
         <EmptyState
           title="Belum ada penjualan"
@@ -253,12 +313,19 @@ export function SaleListClient({
                   onClick={() => goToDetail(s.id)}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex items-center">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(s.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={() => toggleSelect(s.id)}
+                        className="mt-1 h-4 w-4 shrink-0 accent-espresso"
+                      />
                       <p className="font-display text-sm font-semibold text-espresso truncate">
                         {s.invoiceNo}
                       </p>
                     </div>
-                    <RowMenu onDelete={() => onDelete(s.id)} />
+                    <RowMenu id={s.id} onDelete={() => onDelete(s.id)} />
                   </div>
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-espresso-soft">
                     <CustomerBadge name={s.customerName} />
@@ -281,6 +348,14 @@ export function SaleListClient({
           {/* Tabel — desktop */}
           <Table>
             <Thead>
+              <Th className="w-8">
+                <input
+                  type="checkbox"
+                  checked={filtered.length > 0 && filtered.every((s) => selected.has(s.id))}
+                  onChange={toggleSelectAllFiltered}
+                  className="h-4 w-4 accent-espresso"
+                />
+              </Th>
               <Th>No Transaksi</Th>
               <Th>Tanggal & Jam</Th>
               <Th>Pelanggan</Th>
@@ -298,6 +373,14 @@ export function SaleListClient({
                     style={{ boxShadow: `inset 3px 0 0 0 ${style.text}` }}
                     onClick={() => goToDetail(s.id)}
                   >
+                    <Td onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selected.has(s.id)}
+                        onChange={() => toggleSelect(s.id)}
+                        className="h-4 w-4 accent-espresso"
+                      />
+                    </Td>
                     <Td className="font-medium whitespace-nowrap">{s.invoiceNo}</Td>
                     <Td className="text-espresso-soft whitespace-nowrap">
                       {formatJakartaDateTime(s.saleDate)}
@@ -311,7 +394,7 @@ export function SaleListClient({
                     </Td>
                     <Td className="text-right">
                       <div className="flex items-center justify-end">
-                        <RowMenu onDelete={() => onDelete(s.id)} />
+                        <RowMenu id={s.id} onDelete={() => onDelete(s.id)} />
                       </div>
                     </Td>
                   </Tr>
