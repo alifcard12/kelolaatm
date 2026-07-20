@@ -1,4 +1,12 @@
-import { Document, Page, View, Text, Image, StyleSheet, Font } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
 import { formatJakartaDateLong, formatRupiah } from "@/lib/date";
 import { TRAVEL_VEHICLE_LABEL } from "@/lib/labels";
 import { TRAVEL_INVOICE_VENDOR } from "@/lib/travelInvoiceMeta";
@@ -19,18 +27,16 @@ const styles = StyleSheet.create({
   },
   slip: {
     height: SLIP_HEIGHT,
+    width: 450,
     paddingHorizontal: 14,
     paddingVertical: 12,
     position: "relative",
-    borderBottomWidth: 1,
-    borderBottomColor: "#d0d0d0",
-    borderBottomStyle: "dashed",
   },
   corner: {
     position: "absolute",
     width: 10,
     height: 10,
-    borderColor: accent,
+    borderColor: "#A7A7A7",
   },
   header: {
     flexDirection: "row",
@@ -53,33 +59,51 @@ const styles = StyleSheet.create({
   metaLabel: { fontFamily: "Helvetica-Bold" },
   metaRight: { alignItems: "flex-end" },
   table: {
-    borderWidth: 1,
-    borderColor: accent,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderColor: "#111111",
     marginBottom: 6,
   },
   tr: { flexDirection: "row" },
   th: {
-    flex: 1,
     borderRightWidth: 1,
-    borderRightColor: accent,
     borderBottomWidth: 1,
-    borderBottomColor: accent,
+    borderColor: "#111111",
     paddingVertical: 4,
-    textAlign: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  thText: {
     fontFamily: "Helvetica-Bold",
+    textAlign: "center",
   },
   td: {
-    flex: 1,
     borderRightWidth: 1,
-    borderRightColor: accent,
+    borderBottomWidth: 1,
+    borderColor: "#111111",
     paddingVertical: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tdText: {
     textAlign: "center",
   },
   footerDate: { textAlign: "right", marginBottom: 4 },
-  thanks: { textAlign: "center", color: accent, fontSize: 8 },
+  thanks: { textAlign: "center", color: "#111111", fontSize: 8 },
 });
 
-function InvoiceSlip({ data, logoSrc }: { data: TravelInvoiceData; logoSrc: string }) {
+// Lebar kolom TETAP (bukan flex) supaya kolom header & data selalu sejajar
+// persis — kalau pakai flex:1 di tiap baris, lebar dihitung sendiri-sendiri
+// per baris dan garisnya jadi tidak lurus.
+const COL_WIDTHS = [68, 88, 82, 88, 42, 88]; // Dari, Tujuan, Kendaraan, Harga, Orang, Total
+
+function InvoiceSlip({
+  data,
+  logoSrc,
+}: {
+  data: TravelInvoiceData;
+  logoSrc: string;
+}) {
   const unitPrice = Math.round(data.price / Math.max(1, data.passengerCount));
   const cols = [
     data.origin,
@@ -92,10 +116,30 @@ function InvoiceSlip({ data, logoSrc }: { data: TravelInvoiceData; logoSrc: stri
 
   return (
     <View style={styles.slip} wrap={false}>
-      <View style={[styles.corner, { top: 0, left: 0, borderTopWidth: 1, borderLeftWidth: 1 }]} />
-      <View style={[styles.corner, { top: 0, right: 0, borderTopWidth: 1, borderRightWidth: 1 }]} />
-      <View style={[styles.corner, { bottom: 0, left: 0, borderBottomWidth: 1, borderLeftWidth: 1 }]} />
-      <View style={[styles.corner, { bottom: 0, right: 0, borderBottomWidth: 1, borderRightWidth: 1 }]} />
+      <View
+        style={[
+          styles.corner,
+          { top: 0, left: 0, borderTopWidth: 0, borderLeftWidth: 1 },
+        ]}
+      />
+      <View
+        style={[
+          styles.corner,
+          { top: 0, right: 0, borderTopWidth: 0, borderRightWidth: 1 },
+        ]}
+      />
+      <View
+        style={[
+          styles.corner,
+          { bottom: 0, left: 0, borderBottomWidth: 0, borderLeftWidth: 1 },
+        ]}
+      />
+      <View
+        style={[
+          styles.corner,
+          { bottom: 0, right: 0, borderBottomWidth: 0, borderRightWidth: 1 },
+        ]}
+      />
 
       <View style={styles.header}>
         <Image src={logoSrc} style={styles.logo} />
@@ -108,34 +152,53 @@ function InvoiceSlip({ data, logoSrc }: { data: TravelInvoiceData; logoSrc: stri
 
       <View style={styles.metaRow}>
         <View>
-          <Text><Text style={styles.metaLabel}>No Invoice: </Text>{data.invoiceNo}</Text>
-          <Text><Text style={styles.metaLabel}>Nama: </Text>{data.customerName}</Text>
+          <Text>
+            <Text style={styles.metaLabel}>No Invoice: </Text>
+            {data.invoiceNo}
+          </Text>
+          <Text>
+            <Text style={styles.metaLabel}>Nama: </Text>
+            {data.customerName}
+          </Text>
         </View>
         <View style={styles.metaRight}>
-          <Text><Text style={styles.metaLabel}>Tgl Booking: </Text>{formatJakartaDateLong(data.orderDate)}</Text>
-          <Text><Text style={styles.metaLabel}>Tgl Berangkat: </Text>{formatJakartaDateLong(data.departureDate)}</Text>
+          <Text>
+            <Text style={styles.metaLabel}>Tgl Booking: </Text>
+            {formatJakartaDateLong(data.orderDate)}
+          </Text>
+          <Text>
+            <Text style={styles.metaLabel}>Tgl Berangkat: </Text>
+            {formatJakartaDateLong(data.departureDate)}
+          </Text>
         </View>
       </View>
 
       <View style={styles.table}>
         <View style={styles.tr}>
-          {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map((h) => (
-            <Text key={h} style={styles.th}>{h}</Text>
-          ))}
+          {["Dari", "Tujuan", "Kendaraan", "Harga", "Orang", "Total"].map(
+            (h, i) => (
+              <View key={h} style={[styles.th, { width: COL_WIDTHS[i] }]}>
+                <Text style={styles.thText}>{h}</Text>
+              </View>
+            ),
+          )}
         </View>
         <View style={styles.tr}>
           {cols.map((c, i) => (
-            <Text key={i} style={[styles.td, i === cols.length - 1 ? { borderRightWidth: 0 } : {}]}>
-              {c}
-            </Text>
+            <View key={i} style={[styles.td, { width: COL_WIDTHS[i] }]}>
+              <Text style={styles.tdText}>{c}</Text>
+            </View>
           ))}
         </View>
       </View>
 
       <Text style={styles.footerDate}>
-        {TRAVEL_INVOICE_VENDOR.issuedCity}, {formatJakartaDateLong(data.orderDate)}
+        {TRAVEL_INVOICE_VENDOR.issuedCity},{" "}
+        {formatJakartaDateLong(data.orderDate)}
       </Text>
-      <Text style={styles.thanks}>Terima kasih telah menggunakan jasa kami.</Text>
+      <Text style={styles.thanks}>
+        Terima kasih telah menggunakan jasa kami.
+      </Text>
     </View>
   );
 }
