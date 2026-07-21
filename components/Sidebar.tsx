@@ -18,6 +18,7 @@ const navItems = [
   { href: "/product", label: "Product", description: "Data Master Product" },
   { href: "/finance", label: "Keuangan", description: "Keuangan Operasional" },
   { href: "/visits", label: "Jadwal Kunjungan", description: "Jadwal Kunjungan" },
+  { href: "/absensi", label: "Absensi", description: "Absen Masuk & Pulang" },
 ];
 
 const DEFAULT_BRAND = { label: "Kelola ATM", description: "Operasional & Servis" };
