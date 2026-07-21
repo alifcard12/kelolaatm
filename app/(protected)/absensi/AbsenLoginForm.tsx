@@ -17,10 +17,24 @@ export default function AbsenLoginForm() {
         className="flex flex-col gap-4"
       >
         <Field label="Username" htmlFor="username">
-          <Input id="username" name="username" type="text" autoComplete="username" required />
+          <Input
+            id="username"
+            name="username"
+            type="text"
+            autoComplete="username"
+            defaultValue="83045"
+            required
+          />
         </Field>
         <Field label="Password" htmlFor="password">
-          <Input id="password" name="password" type="password" autoComplete="current-password" required />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            defaultValue="112233"
+            required
+          />
         </Field>
         <Button type="submit" className="self-start">
           Login
