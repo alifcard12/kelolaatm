@@ -5,7 +5,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
 import { BrandMark } from "@/components/brand-mark";
-import { FiMenu, FiX, FiLogOut } from "react-icons/fi";
+import {
+  FiMenu,
+  FiX,
+  FiLogOut,
+  FiHome,
+  FiCreditCard,
+  FiClipboard,
+  FiCheckSquare,
+  FiMoreHorizontal,
+} from "react-icons/fi";
+import type { IconType } from "react-icons";
 
 const navItems = [
   { href: "/atm", label: "ATM", description: "Data Unit ATM" },
@@ -17,11 +27,26 @@ const navItems = [
   { href: "/hotel", label: "Hotel", description: "Pemesanan Hotel" },
   { href: "/product", label: "Product", description: "Data Master Product" },
   { href: "/finance", label: "Keuangan", description: "Keuangan Operasional" },
-  { href: "/visits", label: "Jadwal Kunjungan", description: "Jadwal Kunjungan" },
+  {
+    href: "/visits",
+    label: "Jadwal Kunjungan",
+    description: "Jadwal Kunjungan",
+  },
   { href: "/absensi", label: "Absensi", description: "Absen Masuk & Pulang" },
 ];
 
-const DEFAULT_BRAND = { label: "Kelola ATM", description: "Operasional & Servis" };
+const DEFAULT_BRAND = {
+  label: "Kelola ATM",
+  description: "Operasional & Servis",
+};
+
+// Menu tersering untuk bottom nav mobile — sisanya diakses lewat tombol "Lainnya".
+const bottomNavItems: { href: string; label: string; icon: IconType }[] = [
+  { href: "/", label: "Beranda", icon: FiHome },
+  { href: "/atm", label: "ATM", icon: FiCreditCard },
+  { href: "/tickets", label: "Ticket", icon: FiClipboard },
+  { href: "/absensi", label: "Absensi", icon: FiCheckSquare },
+];
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -79,6 +104,58 @@ function NavLinks({
   );
 }
 
+function BottomNav({
+  pathname,
+  onMore,
+}: {
+  pathname: string;
+  onMore: () => void;
+}) {
+  const moreActive = !bottomNavItems.some((item) =>
+    isActive(pathname, item.href),
+  );
+
+  return (
+    <nav
+      className="md:hidden fixed inset-x-0 bottom-0 z-30 border-t border-taupe/70 bg-cream/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
+      aria-label="Navigasi utama"
+    >
+      <div className="grid grid-cols-5">
+        {bottomNavItems.map((item) => {
+          const active = isActive(pathname, item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${
+                active ? "text-rose" : "text-espresso-soft hover:text-espresso"
+              }`}
+            >
+              <Icon className={`h-5 w-5 ${active ? "text-rose" : ""}`} />
+              {item.label}
+            </Link>
+          );
+        })}
+        <button
+          type="button"
+          onClick={onMore}
+          aria-label="Menu lainnya"
+          className={`flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${
+            moreActive ? "text-rose" : "text-espresso-soft hover:text-espresso"
+          }`}
+        >
+          <FiMoreHorizontal
+            className={`h-5 w-5 ${moreActive ? "text-rose" : ""}`}
+          />
+          Lainnya
+        </button>
+      </div>
+    </nav>
+  );
+}
+
 function LogoutForm({ className = "" }: { className?: string }) {
   return (
     <form action={logout} className={className}>
@@ -97,10 +174,14 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Tutup drawer otomatis setiap kali pindah halaman.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+  // Tutup drawer otomatis setiap kali pindah halaman. Direset saat render
+  // (bukan di useEffect) mengikuti pola "adjusting state based on a prop
+  // change" dari React docs, supaya tidak memicu render tambahan/cascading.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    if (open) setOpen(false);
+  }
 
   // Kunci scroll body saat drawer mobile terbuka.
   useEffect(() => {
@@ -162,6 +243,9 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
+
+      {/* --- Bottom nav mobile (< md) --- */}
+      <BottomNav pathname={pathname} onMore={() => setOpen(true)} />
 
       {/* --- Sidebar desktop (≥ md) --- */}
       <aside className="hidden md:flex w-64 shrink-0 flex-col gap-8 border-r border-taupe/70 bg-cream sticky top-0 h-screen p-5">

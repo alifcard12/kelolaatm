@@ -28,6 +28,8 @@ import {
   FiMapPin,
   FiArrowRight,
   FiAlertTriangle,
+  FiCheckSquare,
+  FiFileText,
 } from "react-icons/fi";
 import type { IconType } from "react-icons";
 
@@ -44,6 +46,12 @@ const quickLinks: {
     label: "ATM",
     description: "Data & lokasi mesin",
     icon: FiCreditCard,
+  },
+  {
+    href: "/absensi",
+    label: "Absensi",
+    description: "Absen masuk & pulang",
+    icon: FiCheckSquare,
   },
   {
     href: "/tickets",
@@ -92,6 +100,12 @@ const quickLinks: {
     label: "Product",
     description: "Stok & penjualan",
     icon: FiShoppingBag,
+  },
+  {
+    href: "/notes",
+    label: "Catatan",
+    description: "Notes & memo",
+    icon: FiFileText,
   },
 ];
 
