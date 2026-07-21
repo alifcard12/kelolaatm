@@ -13,6 +13,7 @@ import {
   FiCreditCard,
   FiClipboard,
   FiCheckSquare,
+  FiFileText,
   FiMoreHorizontal,
 } from "react-icons/fi";
 import type { IconType } from "react-icons";
@@ -46,6 +47,7 @@ const bottomNavItems: { href: string; label: string; icon: IconType }[] = [
   { href: "/atm", label: "ATM", icon: FiCreditCard },
   { href: "/tickets", label: "Ticket", icon: FiClipboard },
   { href: "/absensi", label: "Absensi", icon: FiCheckSquare },
+  { href: "/notes", label: "Catatan", icon: FiFileText },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -120,7 +122,7 @@ function BottomNav({
       className="md:hidden fixed inset-x-0 bottom-0 z-30 border-t border-taupe/70 bg-cream/95 backdrop-blur pb-[env(safe-area-inset-bottom)]"
       aria-label="Navigasi utama"
     >
-      <div className="grid grid-cols-5">
+      <div className="grid grid-cols-6">
         {bottomNavItems.map((item) => {
           const active = isActive(pathname, item.href);
           const Icon = item.icon;
@@ -194,7 +196,7 @@ export default function Sidebar() {
   return (
     <>
       {/* --- Top bar mobile (< md) --- */}
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-taupe/70 bg-cream/90 backdrop-blur px-4 py-3">
+      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-taupe/70 bg-cream/90 backdrop-blur px-4 py-1">
         <Brand pathname={pathname} />
         <button
           type="button"

@@ -164,12 +164,6 @@ export default async function HomePage() {
 
   return (
     <div>
-      <PageHeader
-        eyebrow="Dashboard"
-        title="Selamat datang kembali"
-        description="Ringkasan cepat kondisi ATM, perangkat, tiket, dan kas operasional."
-      />
-
       {attentionDeviceCount + attentionKasetCount > 0 && (
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-4 py-3.5 md:px-5">
           <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
@@ -189,16 +183,16 @@ export default async function HomePage() {
       )}
 
       {/* --- Akses cepat --- */}
-      <div className="mb-8">
+      <div className="mb-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-espresso-soft mb-3">
           Akses Cepat
         </h2>
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
+        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
           {quickLinks.map(({ href, label, description, icon: Icon }) => (
             <Link
               key={href}
               href={href}
-              className="group flex flex-col items-center gap-1.5 rounded-2xl border border-taupe/70 bg-paper px-2 py-3.5 text-center shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)] sm:gap-2 sm:py-4 md:items-start md:text-left"
+              className="group flex flex-col items-center gap-1.5 rounded-2xl border border-taupe/70 bg-paper py-2 text-center shadow-[var(--shadow-card)] transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)] sm:gap-2 sm:py-4 md:items-start md:text-left"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-soft text-rose transition-colors group-hover:bg-rose group-hover:text-paper sm:h-10 sm:w-10">
                 <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -217,7 +211,7 @@ export default async function HomePage() {
       </div>
 
       {/* --- Statistik --- */}
-      <div className="mb-8">
+      <div className="mb-4">
         <h2 className="text-xs font-semibold uppercase tracking-wide text-espresso-soft mb-3">
           Ringkasan
         </h2>
