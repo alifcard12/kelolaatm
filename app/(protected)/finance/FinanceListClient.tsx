@@ -198,15 +198,7 @@ export function FinanceListClient({
                   <RowMenu onDelete={() => onDelete(e.id)} />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone={FINANCE_TYPE_TONE[e.type]}>
-                    {FINANCE_TYPE_LABEL[e.type]}
-                  </Badge>
-                  <Badge tone={FINANCE_CATEGORY_TONE[e.category]}>
-                    {FINANCE_CATEGORY_LABEL[e.category]}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm mt-1">
+                <div className="flex items-center justify-between text-sm ">
                   <span
                     className={
                       e.type === "DEBIT"
@@ -217,6 +209,9 @@ export function FinanceListClient({
                     {e.type === "DEBIT" ? "-" : "+"}
                     {formatRupiah(e.amount)}
                   </span>
+                  <Badge tone={FINANCE_CATEGORY_TONE[e.category]}>
+                    {FINANCE_CATEGORY_LABEL[e.category]}
+                  </Badge>
                   <p className="text-xs text-espresso-soft flex items-center gap-1">
                     <FiClock />
                     {formatJakartaDate(e.date)}
