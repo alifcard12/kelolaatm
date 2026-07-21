@@ -123,9 +123,9 @@ export const HOTEL_PAYMENT_METHOD_LABEL: Record<string, string> = {
 };
 
 export const FINANCE_CATEGORY_TONE: Record<string, BadgeTone> = {
-  KETERANGAN: "neutral",
+  KETERANGAN: "success",
   TRANSPORTASI: "info",
-  SPJ: "warning",
+  SPJ: "danger",
   HOTEL: "warning",
   PENGIRIMAN: "info",
   OPERASIONAL: "neutral",
