@@ -477,3 +477,32 @@ model AbsensiLog {
 
   @@map("absensi_logs")
 }
+
+enum AbsenScheduleStatus {
+  PENDING
+  DONE
+  FAILED
+}
+
+// Jadwal absen yang dieksekusi otomatis oleh cron (GitHub Actions) lewat
+// endpoint /api/cron/run-absen-schedule. Login + kirim absen dilakukan
+// sekaligus saat dieksekusi (bukan pakai cookie session lama), jadi tidak
+// masalah walau dieksekusi dari luar (GitHub Actions), dan tidak kadaluarsa.
+model AbsenSchedule {
+  id              String              @id @default(cuid())
+  scheduledAt     DateTime // kapan absen ini harus dikirim (UTC)
+  keterangan      String // "masuk" | "pulang"
+  latitude        String
+  longitude       String
+  manualLocation  Boolean             @default(true)
+  accuracy        String
+  secureScore     String
+  alasanTerlambat String?
+  status          AbsenScheduleStatus @default(PENDING)
+  resultMessage   String? // pesan hasil eksekusi (sukses/gagal), buat ditampilkan di UI
+  executedAt      DateTime?
+  createdAt       DateTime            @default(now())
+
+  @@index([status, scheduledAt])
+  @@map("absen_schedules")
+}

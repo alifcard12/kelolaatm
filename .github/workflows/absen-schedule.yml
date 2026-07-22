@@ -1,0 +1,31 @@
+name: Jalankan Jadwal Absen
+
+on:
+  schedule:
+    # Setiap 5 menit -- ini interval minimum yang disarankan GitHub Actions.
+    # Presisi cron GitHub TIDAK dijamin persis di detik/menit tsb, terutama
+    # saat traffic tinggi bisa telat beberapa menit. Kalau butuh lebih presisi,
+    # lihat catatan "Presisi Waktu" di README/pesan penjelasan.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {} # supaya bisa dites manual dari tab Actions
+
+jobs:
+  run-absen-schedule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Panggil endpoint cron di Vercel
+        run: |
+          http_status=$(curl -s -o response.json -w "%{http_code}" \
+            -X POST "${APP_URL}/api/cron/run-absen-schedule" \
+            -H "Authorization: Bearer ${CRON_SECRET}")
+
+          echo "HTTP status: $http_status"
+          cat response.json
+
+          if [ "$http_status" -ge 300 ]; then
+            echo "Endpoint mengembalikan status gagal ($http_status)"
+            exit 1
+          fi
+        env:
+          APP_URL: ${{ secrets.ABSEN_APP_URL }}
+          CRON_SECRET: ${{ secrets.ABSEN_CRON_SECRET }}

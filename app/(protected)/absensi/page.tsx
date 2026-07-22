@@ -4,6 +4,8 @@ import { ABSENSI_COOKIE_NAME } from "@/lib/absensi";
 import AbsenForm from "./AbsenForm";
 import AbsenLoginForm from "./AbsenLoginForm";
 import AbsensiHistory from "./AbsensiHistory";
+import AbsenScheduleForm from "./AbsenScheduleForm";
+import AbsenScheduleList from "./AbsenScheduleList";
 
 export default async function AbsensiPage() {
   const cookieStore = await cookies();
@@ -16,6 +18,14 @@ export default async function AbsensiPage() {
         {isLoggedIn ? <AbsenForm /> : <AbsenLoginForm />}
       </div>
       <AbsensiHistory />
+
+      {/* Jadwal absen otomatis: dieksekusi oleh GitHub Actions lewat
+          /api/cron/run-absen-schedule, tidak bergantung pada login/cookie
+          di atas -- jadi tetap login sendiri setiap dijalankan. */}
+      <div className="max-w-md">
+        <AbsenScheduleForm />
+      </div>
+      <AbsenScheduleList />
     </div>
   );
 }
