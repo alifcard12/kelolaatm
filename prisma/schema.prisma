@@ -457,3 +457,23 @@ model NoteAttachment {
 
   @@map("note_attachments")
 }
+
+// Riwayat/log setiap kali absen dikirim ke absensi.itsview.id, baik lewat
+// input lokasi manual maupun otomatis (GPS browser). Disimpan lokal karena
+// server absensi eksternal tidak menyediakan endpoint history.
+model AbsensiLog {
+  id               String   @id @default(cuid())
+  username         String // username login absensi, buat tahu ini punya siapa
+  keterangan       String // "masuk" | "pulang"
+  latitude         String
+  longitude        String
+  manualLocation   Boolean // true = lokasi diisi manual, false = otomatis dari GPS
+  alasanTerlambat  String?
+  secureScore      String
+  accuracy         String
+  success          Boolean // hasil pengiriman ke server absensi
+  errorMessage     String? // pesan error kalau gagal
+  createdAt        DateTime @default(now())
+
+  @@map("absensi_logs")
+}

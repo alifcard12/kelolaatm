@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/toast";
 import { submitAbsenAction, logoutAbsensiAction } from "./actions";
 
+type LocationMode = "manual" | "otomatis";
+
 function parseLatLng(raw: string): { lat: string; lng: string } | null {
   const parts = raw.split(",").map((p) => p.trim());
   if (parts.length !== 2) return null;
@@ -21,10 +23,46 @@ function parseLatLng(raw: string): { lat: string; lng: string } | null {
 
 export default function AbsenForm() {
   const [keterangan, setKeterangan] = useState<"masuk" | "pulang">("masuk");
+  // Default input manual sesuai permintaan.
+  const [mode, setMode] = useState<LocationMode>("manual");
   const [latLng, setLatLng] = useState("");
+  const [accuracy, setAccuracy] = useState("3");
+  const [locating, setLocating] = useState(false);
   const [pending, startTransition] = useTransition();
   const toast = useToast();
   const router = useRouter();
+
+  function handleModeChange(next: LocationMode) {
+    setMode(next);
+    // Ganti mode, bersihkan lokasi lama biar tidak ketuker manual <-> otomatis.
+    setLatLng("");
+    if (next === "manual") setAccuracy("3");
+  }
+
+  function handleDeteksiLokasi() {
+    if (!("geolocation" in navigator)) {
+      toast.error("Tidak didukung", "Browser ini tidak mendukung deteksi lokasi.");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude, accuracy: acc } = pos.coords;
+        setLatLng(`${latitude}, ${longitude}`);
+        setAccuracy(String(Math.round(acc)));
+        setLocating(false);
+        toast.success("Lokasi terdeteksi");
+      },
+      (err) => {
+        setLocating(false);
+        toast.error(
+          "Gagal deteksi lokasi",
+          err.message || "Izinkan akses lokasi lalu coba lagi."
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000 }
+    );
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,8 +71,10 @@ export default function AbsenForm() {
     const parsed = parseLatLng(latLng);
     if (!parsed) {
       toast.error(
-        "Format lokasi salah",
-        "Isi dengan format: -7.629873, 111.517497",
+        mode === "manual" ? "Format lokasi salah" : "Lokasi belum terdeteksi",
+        mode === "manual"
+          ? "Isi dengan format: -7.629873, 111.517497"
+          : "Tekan tombol \"Deteksi Lokasi Saat Ini\" dulu."
       );
       return;
     }
@@ -43,7 +83,7 @@ export default function AbsenForm() {
     formData.set("keterangan", keterangan);
     formData.set("latitude", parsed.lat);
     formData.set("longitude", parsed.lng);
-    formData.set("manual_location", "0");
+    formData.set("manual_location", mode === "manual" ? "1" : "0");
 
     startTransition(async () => {
       try {
@@ -104,17 +144,71 @@ export default function AbsenForm() {
             </div>
           </Field>
 
-          <Field label="Latitude, Longitude" htmlFor="lat_lng">
-            <Input
-              id="lat_lng"
-              name="lat_lng"
-              type="text"
-              placeholder="-7.629873, 111.517497"
-              value={latLng}
-              onChange={(e) => setLatLng(e.target.value)}
-              required
-            />
+          <Field label="Metode Lokasi" htmlFor="mode">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => handleModeChange("manual")}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  mode === "manual"
+                    ? "border-rose bg-rose/10 text-rose"
+                    : "border-taupe-dark/40 text-espresso-soft"
+                }`}
+              >
+                Manual
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange("otomatis")}
+                className={`rounded-lg border px-4 py-2 text-sm font-medium transition ${
+                  mode === "otomatis"
+                    ? "border-rose bg-rose/10 text-rose"
+                    : "border-taupe-dark/40 text-espresso-soft"
+                }`}
+              >
+                Otomatis (GPS)
+              </button>
+            </div>
           </Field>
+
+          {mode === "manual" ? (
+            <Field label="Latitude, Longitude" htmlFor="lat_lng">
+              <Input
+                id="lat_lng"
+                name="lat_lng"
+                type="text"
+                placeholder="-7.629873, 111.517497"
+                value={latLng}
+                onChange={(e) => setLatLng(e.target.value)}
+                required
+              />
+            </Field>
+          ) : (
+            <Field
+              label="Lokasi Saat Ini"
+              htmlFor="lat_lng_auto"
+              hint={latLng ? undefined : "Tekan tombol di bawah untuk ambil lokasi dari GPS."}
+            >
+              <div className="flex flex-col gap-2">
+                <Input
+                  id="lat_lng_auto"
+                  name="lat_lng_auto"
+                  type="text"
+                  placeholder="Belum terdeteksi"
+                  value={latLng}
+                  readOnly
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleDeteksiLokasi}
+                  disabled={locating}
+                >
+                  {locating ? "Mendeteksi..." : "Deteksi Lokasi Saat Ini"}
+                </Button>
+              </div>
+            </Field>
+          )}
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Accuracy" htmlFor="accuracy">
@@ -123,7 +217,9 @@ export default function AbsenForm() {
                 name="accuracy"
                 type="text"
                 inputMode="decimal"
-                defaultValue="3"
+                value={accuracy}
+                onChange={(e) => setAccuracy(e.target.value)}
+                readOnly={mode === "otomatis"}
                 required
               />
             </Field>

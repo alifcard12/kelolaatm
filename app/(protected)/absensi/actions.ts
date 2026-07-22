@@ -4,8 +4,10 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import {
   ABSENSI_COOKIE_NAME,
+  ABSENSI_USERNAME_COOKIE_NAME,
   loginAbsensi,
   submitAbsen,
+  listAbsensiLogs,
   type SubmitAbsenResult,
 } from "@/lib/absensi";
 
@@ -28,6 +30,13 @@ export async function loginAbsensiAction(formData: FormData) {
     // Mengikuti masa berlaku ci_session dari server absensi (~1 hari).
     maxAge: 60 * 60 * 24,
   });
+  cookieStore.set(ABSENSI_USERNAME_COOKIE_NAME, username, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
 
   revalidatePath("/absensi");
 }
@@ -35,6 +44,7 @@ export async function loginAbsensiAction(formData: FormData) {
 export async function logoutAbsensiAction() {
   const cookieStore = await cookies();
   cookieStore.delete(ABSENSI_COOKIE_NAME);
+  cookieStore.delete(ABSENSI_USERNAME_COOKIE_NAME);
   revalidatePath("/absensi");
 }
 
@@ -43,8 +53,9 @@ export async function submitAbsenAction(
 ): Promise<SubmitAbsenResult> {
   const cookieStore = await cookies();
   const sessionValue = cookieStore.get(ABSENSI_COOKIE_NAME)?.value;
+  const username = cookieStore.get(ABSENSI_USERNAME_COOKIE_NAME)?.value;
 
-  if (!sessionValue) {
+  if (!sessionValue || !username) {
     throw new Error("Belum login ke sistem absensi.");
   }
 
@@ -65,6 +76,7 @@ export async function submitAbsenAction(
 
   const result = await submitAbsen({
     sessionValue,
+    username,
     keterangan,
     latitude,
     longitude,
@@ -76,4 +88,8 @@ export async function submitAbsenAction(
 
   revalidatePath("/absensi");
   return result;
+}
+
+export async function getAbsensiLogsAction() {
+  return listAbsensiLogs();
 }
