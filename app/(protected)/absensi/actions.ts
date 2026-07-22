@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
 import {
   ABSENSI_COOKIE_NAME,
   ABSENSI_USERNAME_COOKIE_NAME,
@@ -92,4 +93,9 @@ export async function submitAbsenAction(
 
 export async function getAbsensiLogsAction() {
   return listAbsensiLogs();
+}
+
+export async function deleteAbsensiLogAction(id: string) {
+  await prisma.absensiLog.delete({ where: { id } });
+  revalidatePath("/absensi");
 }

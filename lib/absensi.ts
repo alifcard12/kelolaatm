@@ -78,6 +78,7 @@ export type SubmitAbsenResult = {
   ok: boolean;
   status: number;
   raw: string;
+  warning?: string;
 };
 
 export async function submitAbsen(
@@ -122,6 +123,20 @@ export async function submitAbsen(
       });
       throw new AbsensiError(message);
     }
+
+    // absensi.itsview.id kadang balas 500 SETELAH data absen sebenarnya
+    // sudah tersimpan di sisi mereka (error terjadi di proses lanjutan,
+    // mis. kirim notifikasi). Jadi jangan dianggap gagal total — tandai
+    // sebagai "perlu dicek" saja, bukan gagal, supaya tidak menyesatkan.
+    if (res.status === 500) {
+      const warning =
+        "Server absensi membalas error (500) setelah data dikirim. Kemungkinan besar absen tetap tersimpan — cek langsung di web/app absensi kalau ragu.";
+      await prisma.absensiLog.create({
+        data: { ...logBase, success: true, errorMessage: warning },
+      });
+      return { ok: true, status: res.status, raw, warning };
+    }
+
     if (!res.ok) {
       const message = `Absen gagal (status ${res.status}). ${raw.slice(0, 200)}`;
       await prisma.absensiLog.create({

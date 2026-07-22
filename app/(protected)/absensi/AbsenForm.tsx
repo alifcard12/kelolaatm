@@ -87,8 +87,12 @@ export default function AbsenForm() {
 
     startTransition(async () => {
       try {
-        await submitAbsenAction(formData);
-        toast.success("Absen berhasil dikirim");
+        const result = await submitAbsenAction(formData);
+        if (result.warning) {
+          toast.warning("Perlu dicek", result.warning);
+        } else {
+          toast.success("Absen berhasil dikirim");
+        }
         form.reset();
         setLatLng("");
         router.refresh();
