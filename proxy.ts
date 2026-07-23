@@ -16,8 +16,9 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Lindungi semua route KECUALI /login, static assets, dan file di /public
-  matcher: [
-    "/((?!login|_next/static|_next/image|favicon.ico).*)",
-  ],
+  // Lindungi semua route KECUALI /login, static assets, file di /public,
+  // dan /api/cron/* -- endpoint cron itu dipanggil dari luar (GitHub Actions),
+  // jadi tidak punya cookie login sama sekali, dan sudah dilindungi sendiri
+  // pakai CRON_SECRET di dalam route-nya (lihat app/api/cron/run-absen-schedule/route.ts).
+  matcher: ["/((?!login|api/cron|_next/static|_next/image|favicon.ico).*)"],
 };
