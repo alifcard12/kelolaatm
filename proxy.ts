@@ -20,5 +20,7 @@ export const config = {
   // dan /api/cron/* -- endpoint cron itu dipanggil dari luar (GitHub Actions),
   // jadi tidak punya cookie login sama sekali, dan sudah dilindungi sendiri
   // pakai CRON_SECRET di dalam route-nya (lihat app/api/cron/run-absen-schedule/route.ts).
-  matcher: ["/((?!login|api/cron|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!login|api/cron|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

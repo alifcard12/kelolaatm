@@ -83,7 +83,11 @@ export default function AbsenForm() {
     formData.set("keterangan", keterangan);
     formData.set("latitude", parsed.lat);
     formData.set("longitude", parsed.lng);
-    formData.set("manual_location", mode === "manual" ? "1" : "0");
+    formData.set("manual_location", "0");
+    // Catatan: server absensi.itsview.id ternyata cuma benar-benar menyimpan
+    // absen kalau manual_location = "0" -- baik posisi lat/lon-nya diisi
+    // manual maupun dari GPS. Value "1" dulu dikira untuk mode "Manual", tapi
+    // ternyata bikin absen tidak tersimpan walau server tetap balas sukses/500.
 
     startTransition(async () => {
       try {

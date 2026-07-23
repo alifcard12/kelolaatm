@@ -76,7 +76,11 @@ export async function runDueAbsenSchedules() {
         keterangan: schedule.keterangan,
         latitude: schedule.latitude,
         longitude: schedule.longitude,
-        manualLocation: schedule.manualLocation ? "1" : "0",
+        // Server absensi.itsview.id hanya benar-benar menyimpan absen kalau
+        // manual_location = "0", walau lat/lon-nya sendiri diisi manual oleh
+        // kita (bukan dari GPS). Ini dikonfirmasi dari pengujian langsung:
+        // kirim "1" -> absen tidak tersimpan meski respons tetap 500/"warning".
+        manualLocation: "0",
         alasanTerlambat: schedule.alasanTerlambat ?? "",
         secureScore: schedule.secureScore,
         accuracy: schedule.accuracy,
