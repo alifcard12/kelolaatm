@@ -37,12 +37,22 @@ jobs:
 
       - name: Panggil endpoint cron di Vercel
         run: |
+          extra_header=()
+          if [ -n "${VERCEL_BYPASS}" ]; then
+            extra_header=(-H "x-vercel-protection-bypass: ${VERCEL_BYPASS}")
+          fi
+
           http_status=$(curl -sS -o response.json -w "%{http_code}" \
             -X POST "${APP_URL}/api/cron/run-absen-schedule" \
-            -H "Authorization: Bearer ${CRON_SECRET}")
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "${extra_header[@]}")
 
           echo "HTTP status: $http_status"
           cat response.json
+
+          if [ "$http_status" = "307" ] || [ "$http_status" = "401" ]; then
+            echo "::error::Kemungkinan besar ini Vercel Deployment Protection yang meredirect ke halaman login, bukan error dari endpoint kita. Lihat instruksi di ABSEN-SCHEDULE-SETUP.md bagian Deployment Protection."
+          fi
 
           if [ "$http_status" -ge 300 ]; then
             echo "Endpoint mengembalikan status gagal ($http_status)"
@@ -51,3 +61,4 @@ jobs:
         env:
           APP_URL: ${{ secrets.ABSEN_APP_URL }}
           CRON_SECRET: ${{ secrets.ABSEN_CRON_SECRET }}
+          VERCEL_BYPASS: ${{ secrets.ABSEN_VERCEL_BYPASS }}
